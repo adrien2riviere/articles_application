@@ -1,0 +1,46 @@
+
+
+//init the variables
+var table = document.getElementsByTagName('table')[0];
+selected = table.getElementsByClassName('selected');
+selected_addition = table.getElementsByClassName('selected_addition');
+table.onclick = highlight;
+
+var logout = document.getElementById('logoutlink');
+logout.onclick = resetscroll;
+
+
+//highlight the line when user click on it
+function highlight(e) {
+	if(selected){
+		tr0 = selected[0];
+	}
+	if(selected_addition){
+		tr0_addition = selected_addition[0];
+	}
+	if(e.target.parentNode.tagName == 'TR') {
+		manageClassName(e.target.parentNode, tr0);
+	}
+	
+	/* cas pour td operation */
+	if(e.target.parentNode.parentNode.tagName == 'TR') {
+		manageClassName(e.target.parentNode.parentNode, tr0);
+	}
+}
+
+function manageClassName(node, tr0){
+		if(node.className == "line") {
+			stock1 = node.className;
+			node.className="selected";
+	    }
+	    if(node.className == "addition") {
+			stock1 = node.className;
+			node.className="selected_addition";
+	    }
+	    if(tr0){
+			tr0.className = "line";
+		}
+		if(tr0_addition){
+			tr0_addition.className = "addition";
+		}
+}

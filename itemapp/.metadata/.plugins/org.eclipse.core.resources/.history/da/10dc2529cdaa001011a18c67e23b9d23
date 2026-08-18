@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Administration - login</title>
+        <link rel="stylesheet" type="text/css" href="../css/admin/adminmenu.css">
+    </head>
+    <body>
+        <h2>Administration: Menu</h2>
+        <div class="divlogout">
+        	<a id="logout" href="/admin/logout"><img src="../images/logout.png"><span th:text='| logout'></span></a>
+        </div>
+        <div class="divmenu">
+        	<a id="users" href="/admin/users">users</a>
+        	<a id="departements" href="/admin/compagnies/list">departments</a>
+		</div>
+    </body>
+</html>

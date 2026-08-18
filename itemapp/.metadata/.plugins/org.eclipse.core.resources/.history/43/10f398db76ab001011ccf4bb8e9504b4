@@ -1,0 +1,174 @@
+html{
+	height: 100%
+}
+
+
+body {
+	display:flex;
+	flex-direction:column;
+  	background-color: lightyellow;
+  	margin-top:0em;
+  	margin-bottom:0em;
+  	margin-right:0em;
+  	margin-left:0em;
+  	height: 100%;
+}
+
+h2 {
+	font-family:verdana;
+	font-size:1.4em;
+	padding-left:1.4em;
+	margin-top:0.6em;
+	margin-bottom:0.6em;
+	font-style: italic;
+}
+
+label {
+	margin-right:1em;
+}
+
+input {
+	width:6em;
+	margin-right:1em;
+}
+
+img {
+	height:0.7em;
+	width:0.7em;
+}
+
+.info {
+	margin-right:0.4em;
+}
+
+.trans_link {
+	display:block;
+	margin-bottom:1em;
+}
+
+#divlink {
+	border-top:solid;
+	border-width:thin;
+	border-color:#b3b3b3;
+	background-color:#eaeaea;
+	padding-top:1em;
+	padding-bottom:1em;
+	padding-left:1em;
+	font-family:calibri;
+	font-size:0.94em;
+}
+
+#logout {
+	margin-left:1em;
+	margin-right:2.5em;
+	background-color: #d2d2d2;
+	padding-left:1em;
+	padding-right:1em;
+	padding-top:0.2em;
+	padding-bottom:0.2em;
+	text-decoration:none;
+	color:black;
+	border-style:solid;
+	border-color:grey;
+	border-width:thin;
+	border-radius:0.16em;
+	display:inline-block;
+}
+
+#langage {
+	color:blue;
+	margin-right:2em;
+	display:inline-block;
+}
+
+#department {
+	color:blue;
+	display:inline-block;
+}
+
+#localtime {
+	float:right;
+	margin-right:2em;
+}
+
+#divheader {
+	background-color:white;
+	border:solid;
+	border-color:grey;
+	border-width:thin;
+	border-left:none;
+	border-right:none;
+	border-top:none;
+	background-color:#c0d3ed;
+	/*background-color:#88acdd;
+	background-image: linear-gradient(to bottom, #c0d3ed, #88acdd);*/
+}
+
+#divcontent {
+	display: flex;
+	flex-direction:row;
+	height:100%;
+}
+
+#div_link {
+	float: left;
+	width:20em;
+	padding-top:2em;
+	padding-bottom:2em;
+	padding-left:2em;
+	padding-right:2em;
+	border-right-style:solid;
+	border-color:lightgrey;
+	background-color:white;
+	font-family:calibri;
+	overflow-y:auto;
+}
+
+#div_link > a {
+	text-decoration:none;
+	color:black;
+	font-weight:bold;
+}
+
+#div_link > a:hover {
+	text-decoration:underline;
+}
+
+#div_search {	
+	float: left;
+	width:100%;
+	margin-top:0em;
+	margin-bottom:0em;
+	padding-top:2em;
+	padding-left:4em;
+	font-family:calibri;
+}
+
+#error {
+	margin-top:2em;
+}
+
+
+/** tooltips **/
+
+#logouttip {
+	visibility: hidden;
+  	position: absolute;
+  	z-index: 10;
+  	font-size:0.8em;
+  	transition-delay: 0.2s;
+  	background-color:beige;
+  	margin-top:2.5em;
+  	margin-left:2.5em;
+  	padding-left:0.25em;
+  	padding-right:0.25em;
+  	padding-top:0.1em;
+  	padding-bottom:0.1em;
+  	border:solid;
+  	border-width:thin;
+}
+
+#logout:hover #logouttip {
+  visibility: visible;
+  transition-delay: 1s;
+}

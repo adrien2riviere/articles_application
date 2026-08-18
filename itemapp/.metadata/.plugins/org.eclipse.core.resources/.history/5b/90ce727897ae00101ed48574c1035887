@@ -1,0 +1,42 @@
+
+var selectRole = document.getElementById("role");
+selectRole.onchange = logSelection;
+
+if(selectRole.value == "user"){
+	document.getElementById("department").disabled = false;
+	document.getElementById("department").required = true;
+	document.getElementById("langage").disabled = false;
+	document.getElementById("langage").required = true;
+	document.getElementById("timezone").disabled = false;
+	document.getElementById("timezone").required = true;
+	document.getElementById("display").disabled = false;
+	document.getElementById("display").required = true;
+}
+
+function logSelection() {
+	let value = selectRole.value;
+	if(value == "user") {
+		document.getElementById("department").disabled = false;
+		document.getElementById("department").required = true;
+		document.getElementById("langage").disabled = false;
+		document.getElementById("langage").required = true;
+		document.getElementById("timezone").disabled = false;
+		document.getElementById("timezone").required = true;
+		document.getElementById("display").disabled = false;
+		document.getElementById("display").required = true;
+	}
+	else {
+		document.getElementById("department").disabled = true;
+		document.getElementById("department").required = false;
+		document.getElementById("department").innerText = "";
+		document.getElementById("langage").disabled = true;
+		document.getElementById("langage").required = false;
+		document.getElementById("langage").value = "";
+		document.getElementById("timezone").disabled = true;
+		document.getElementById("timezone").required = false;
+		document.getElementById("timezone").value = "";
+		document.getElementById("display").disabled = true;
+		document.getElementById("display").required = false;
+		document.getElementById("display").value = "";
+	}
+}

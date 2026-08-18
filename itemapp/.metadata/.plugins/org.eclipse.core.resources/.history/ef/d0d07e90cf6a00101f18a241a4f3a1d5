@@ -1,0 +1,158 @@
+#home page
+
+#titles
+home-title=Liste des articles
+
+#table headers
+item-no-header= no article
+color-header= couleur
+size-header= taille
+graphics-header= graphisme
+price-header= prix
+update-header= modifier
+delete-header= supprimer
+
+#if no item in database
+home-empty=pas d'article en base de données
+
+#messages
+add-message=Date - Une ligne a été ajoutée (réf: var1, ligne: var2)
+update-message=Date - Une ligne a été modifiée (réf: var1, ligne: var2)
+delete-message=Date - Une ligne a été supprimée (réf: var1)
+home-format=dd/MM/yyyy - HH:mm:ss
+clear-message=supprimer le message
+
+
+#size values
+
+#values
+small=petit
+medium=moyen
+big=grand
+
+
+#add page
+
+#titles
+add-title=Ajouter un article
+
+#labels
+add-color-label=couleur
+add-size-label=taille
+add-graphics-label=graphisme
+add-price-label=prix
+
+
+#update page
+
+#titles
+update-title=Modifier un article
+
+#labels
+update-item-no-label=no article
+update-color-label=couleur
+update-size-label=taille
+update-graphics-label=graphisme
+update-price-label=prix
+
+
+#delete page
+
+#titles
+delete-title=Supprimer un article
+
+#labels
+delete-item-no-label=no article
+delete-color-label=couleur
+delete-size-label=taille
+delete-graphics-label=graphisme
+delete-price-label=prix
+
+#message
+delete-confirmation-message=Voulez-vous vraiment supprimer cet élément ?
+
+
+#internationalization page
+
+#titles
+inter-title=Internationalisation
+
+#labels
+inter-label=Language :
+inter-label-zone=Fuseau horaire :
+inter-label-action=Action :
+
+#inputs
+inter-input=français
+inter-check=Activer le fuseau horaire
+
+#time zone selection EN
+selection-EN=Grande Bretagne - Europe/Londre
+
+#time zone selection FR
+selection=France - Europe/Paris
+
+
+#sorting page
+
+#titles
+sorting-title=Définir l'ordre de tri
+
+#labels
+sorting-label-fields=Champs :     
+sorting-label-exemple=Exemple
+sorting-label-order=Définir l'ordre de tri
+sorting-label-action=Action
+
+#fields
+sorting-field-fields=no article, couleur, taille, graphisme, prix
+sorting-field-exemple=couleur, taille, graphisme, prix
+sorting-field-sorting=no article-couleur-taille-graphisme-prix
+sorting-field-validate=valider
+
+
+
+#history page
+
+#label
+history-label=Historique des opérations
+
+#message (not used)
+history-operation=num    yyyy-mm-dd  HH:mm:ss  ref  OPERATION	[description]
+
+
+#operations
+history-ADDITION=CREATION\t
+history-UPDATE=MODIFICATION
+history-DELETION=SUPPRESSION
+
+
+#date format
+history-format=yyyy-MM-dd HH:mm:ss
+format=dd-MM-yyyy - HH:mm:ss
+
+
+#time zone
+zone-FR=Europe/Paris
+zone-EN=Europe/Londre
+
+#error messages
+colour-required=Le champ couleur est requis !
+colour-blank=Le champ couleur ne peut pas être blanc !
+size-required=Le champ taille est requis !
+size-blank=Le champ taille ne peut pas être blanc !
+graphics-required=Le champ graphisme est requis !
+graphics-blank=Le champ graphisme ne peut pas être blanc !
+
+#error messages for price
+price-num =Le prix doit être un nombre !
+price-neg =Le prix ne peut être négatif !
+price-big =Le prix ne peut être plus grand que 100 !
+price-dec =Le prix ne doit pas avoir plus de 2 décimales !
+
+#error messages department
+compagny-invalid="La société VALUE est non valide !";
+division-invalid="La division VALUE est non valide !";
+compagny-not="La société VALUE n'existe pas !";
+division-not="La division VALUE n'existe pas !";
+

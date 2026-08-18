@@ -1,0 +1,10 @@
+
+var selectRole = document.getElementById("role");
+selectRole.addEventListener("select", logSelection);
+
+function logSelection() {
+	let value = selectRole.value;
+	if(value == "user") {
+		document.getElementById("langage").disabled = false;
+	}
+}

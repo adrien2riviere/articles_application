@@ -1,0 +1,141 @@
+1757336368133	Rename type 'TableController'
+1757336438451	Copy compilation unit
+1757354096731	Copy compilation unit
+1757354252427	Copy compilation unit
+1757354492029	Rename type 'ItemController'
+1757356010374	Rename package 'com.item.item.controller.oo'
+1757356028108	Copy package
+1757356041812	Copy package
+1757356045313	Delete element
+1757356089360	Rename package 'com.item.item.controller.toto'
+1757356100726	Delete element
+1757356118478	Rename package 'com.item.item.controller'
+1757356131290	Rename package 'com.item.item.application.controller'
+1757356160067	Copy package
+1757356175758	Rename package 'com.item.item.app.controller'
+1757356187691	Rename package 'com.item.item.itm100.controller'
+1757356219174	Delete element
+1757356254275	Delete element
+1757356257834	Delete element
+1757356261356	Delete element
+1757356264737	Delete element
+1757356268439	Delete element
+1757356271972	Delete element
+1757356291988	Copy package
+1757356302559	Delete elements
+1757356308957	Delete element
+1757356318945	Delete element
+1757356322487	Delete element
+1757356326873	Delete element
+1757362399204	Copy compilation unit
+1757362418075	Rename type 'AdminControllerz'
+1757362427464	Rename type 'AdmLoginControllerz'
+1757362448654	Rename type 'AdminController'
+1757362658468	Copy compilation unit
+1757362682213	Copy compilation unit
+1757362743261	Copy compilation unit
+1757363021847	Rename type 'CrudController'
+1757363028316	Rename type 'OptionController'
+1757363037259	Rename type 'TableController'
+1757363292712	Rename type 'ItmCrudController'
+1757363298568	Rename type 'ItmOptionController'
+1757363304186	Rename type 'ItmTableController'
+1757363577421	Copy compilation unit
+1757363782106	Delete element
+1757452408024	Delete element
+1757452426828	Rename resource 'toto'
+1757452489495	Delete element
+1757452842290	Move 'login.html' to 'login'
+1757452856790	Delete element
+1757452862749	Move 'resetPass.html' to 'login'
+1757452870837	Move 'confPass.html' to 'login'
+1757452880705	Move 'checkPass.html' to 'login'
+1757453063815	Move 'item100' to 'app'
+1757453236988	Rename resource 'Item100'
+1757528370017	Move 'scrollbar.html' to 'item100'
+1757528372469	Move 'listBooks.html' to 'item100'
+1757528376022	Move 'menu.html' to 'app'
+1757528389440	Move 'update.html' to 'item100'
+1757528392617	Move 'delete.html' to 'item100'
+1757528405339	Move 'transactions.html' to 'item100'
+1757528407813	Move 'sorting.html' to 'item100'
+1757528413916	Move 'add.html' to 'item100'
+1757528452099	Move 'connectError.html' to 'app'
+1757528517405	Move 'add.css' to 'css'
+1757528527335	Move 'scrollbar.css' to 'css'
+1757528530913	Move 'update.css' to 'css'
+1757528533432	Move 'sorting.css' to 'css'
+1757528538474	Move 'listBook.css' to 'css'
+1757528543783	Move 'delete.css' to 'css'
+1757528557103	Move 'board.js' to 'js'
+1757528561516	Move 'scroll.js' to 'js'
+1757528568337	Move 'sorting.js' to 'js'
+1757528608724	Move 'admadd.css' to 'css'
+1757528610521	Move 'admdelete.css' to 'css'
+1757528616717	Move 'adminmenu.css' to 'css'
+1757528619344	Move 'admlogin.css' to 'css'
+1757528621029	Move 'admupdate.css' to 'css'
+1757528622643	Move 'admusers.css' to 'css'
+1757528699367	Move 'checkPass.css' to 'css'
+1757528702270	Move 'confPass.css' to 'css'
+1757528706186	Move 'resetPass.css' to 'css'
+1757528720548	Move 'login.css' to 'css'
+1757528736195	Move 'menu.css' to 'css'
+1757528745391	Move 'history.css' to 'css'
+1757528768090	Delete element
+1757528790444	Move 'deplist.css' to 'css'
+1757528800182	Move 'compagnies.css' to 'css'
+1757528802097	Move 'divisions.css' to 'css'
+1757528828890	Delete element
+1757528833310	Move 'admdelete.js' to 'js'
+1757528859139	Move 'item100' to 'app'
+1757528911807	Delete element
+1757528925778	Delete element
+1757528961815	Move 9 resources to 'admin'
+1757528977182	Move 'admdelete.js' to 'admin'
+1757528981341	Delete element
+1757528995472	Move 'menu.css' to 'app'
+1757529005499	Move 'menu.css' to 'css'
+1757529009800	Delete element
+1757529030658	Move 7 resources to 'item100'
+1757529050483	Move 3 resources to 'item100'
+1757529054720	Delete element
+1757529086768	Move 4 resources to 'login'
+1757529090698	Delete element
+1757529107403	Delete element
+1757529137238	Move 'item100' to 'templates'
+1757529142838	Move 2 resources to 'templates'
+1757529145702	Delete element
+1757529328528	Delete element
+1757529422455	Rename package 'com.item.item.controller.admin'
+1757529469300	Rename package 'com.item.admin.controller'
+1757529536803	Rename package 'com.item.item.controller.admin'
+1757529840501	Delete element
+1757529846090	Delete element
+1757529850363	Delete element
+1757529853611	Delete element
+1757529857249	Delete element
+1757529865747	Rename type 'AdmAppController'
+1757533415479	Delete element
+1757535204204	Delete elements
+1757535214391	Rename type 'Itm100TableController'
+1757535729316	Move 'initDepartment.html' to 'templates'
+1757536051276	Rename resource 'chooseLangage.html'
+1757536903246	Delete elements
+1757536907691	Delete elements
+1757537270407	Copy compilation unit
+1757537289659	Delete element
+1757537295192	Rename type 'InitController'
+1757537380771	Copy compilation unit
+1757537386343	Copy compilation unit
+1757537391922	Delete elements
+1757537947159	Delete element
+1757705885745	Rename type 'AdmBookService'
+1757706133150	Delete element
+1757706353199	Delete element
+1757706357185	Delete element
+1757843905453	Move compilation unit
+1757843911322	Move compilation unit
+1757843915339	Move compilation unit
+1757843920088	Move compilation unit
+1757843928103	Move compilation unit

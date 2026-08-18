@@ -1,0 +1,96 @@
+body {
+	padding-inline-start:1em;
+	position: relative;
+}
+
+h2 {
+	font-family:Arial;
+	font-size: 1.2em;
+	margin-bottom:2em;
+}
+
+
+.operation {
+	display:block;
+	margin-top:0.4em;
+}
+
+#back {
+	/*background-color: lightgrey;*/
+	padding:0.4em;
+	/*text-decoration:none;*/
+	color:black;
+	/*border-style:solid;
+	border-width:thin;
+	border-radius:0.16em;*/
+	font-family:calibri;
+	font-size:0.94em;
+	color:#008080;
+	font-weight: bold;
+}
+
+#title {
+	margin-top:2em;
+	margin-bottom:0.5em;
+}
+
+#columntextarea {
+	border-style: solid;
+	border-width:thin;
+	float: left;
+	width:14em;
+}
+
+#cono {
+	float: left;
+	margin-right:1em;
+}
+
+#columnoperation {
+	margin-left:2em;
+	float: left;
+}
+
+
+/**** popup window ***/
+form {
+	margin-top:5em;
+	text-align:center;
+	width:14em;
+	border-style: solid;
+	border-color:lightgrey;
+	border-width:medium;
+	padding-bottom:1em;
+	left: 24em;
+	top: 2em;
+	position: absolute;
+	background-color:white;
+}
+
+form > h3 {
+	margin-bottom:2em;
+}
+
+form > button {
+	margin-bottom:2em;
+}
+
+.cono_label {
+	margin-right:1em;
+}
+
+#cono_field {
+	width:4em;
+	margin-bottom:2em;
+}
+
+.btn {
+	margin-bottom:1em;
+}
+
+.error {
+	margin-left:1em;
+	margin-right:1em;
+}
+
+

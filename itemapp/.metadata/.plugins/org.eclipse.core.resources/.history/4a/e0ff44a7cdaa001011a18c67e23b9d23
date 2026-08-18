@@ -1,0 +1,62 @@
+body {
+  padding-inline-start:0em;/*1em;*/
+  margin-left:0em;
+  margin-top:0em;
+}
+
+h2 {
+	font-family:Arial;
+	margin-bottom:1em;
+	margin-top:0.4em;
+	padding-left:0em;
+	padding-left:1em;
+	padding-top:0.4em;
+	padding-bottom:0.4em;
+	color:black;
+}
+
+img {
+	height:0.7em;
+	width:0.7em;
+	padding-right:0.6em;
+	border-right:solid;
+}
+
+.divlogout {
+	margin-left:2em;
+	margin-bottom:2em;
+	font-family:calibri;
+	font-size:0.94em;
+}
+
+.divlogout > span {
+	margin-left:2em;
+}
+
+.divmenu {
+	margin-left:1em;
+}
+
+.divlogout > a {
+	padding-left:0.8em;
+	padding-right:1em;
+	padding-top:0.2em;
+	padding-bottom:0.2em;
+	text-decoration:none;
+	color:black;
+	border-style:solid;
+	border-color:grey;
+	border-width:thin;
+	border-radius:0.16em;
+	background-color: #d2d2d2;
+}
+
+.divmenu > a {
+	margin-left:2.5em;
+	display:block;
+	margin-bottom:0.8em;
+	font-weight: bold;
+	color:#008080;
+	font-family:arial;
+	font-size:0.86em;
+}

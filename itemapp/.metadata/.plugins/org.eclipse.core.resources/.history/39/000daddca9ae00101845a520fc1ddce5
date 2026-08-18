@@ -1,0 +1,109 @@
+package com.item.item.service;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Optional;
+
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.item.item.bundle.BundleMessage;
+import com.item.item.config.SecurityConfig;
+import com.item.item.model.User;
+import com.item.item.repository.UserRepository;
+
+
+@Service
+public class UserService {
+	
+	@Autowired
+	UserRepository userRepository;
+	
+	
+	//CRUD operations
+	public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+	
+	public Optional<User> getUser(int id) {
+        return userRepository.findById(id);
+    }
+	
+	public Optional<User> getUser(String username) {
+        return userRepository.findByUsername(username);
+    }
+	
+	public Iterable<User> getUsers() throws FileNotFoundException, IOException, ParseException {
+		Iterable<User> users = userRepository.findAll();
+		for(User user : users) {
+			if(user.getRole().equals("user")) {
+				boolean isFr = user.getLangage().equals("fr");
+				user.setLangage(isFr ? "french" : "english");
+				user.setTimezone(BundleMessage.getBundleMessage("timezone-" + user.getTimezone()));
+			}
+			user.setPassword("********");
+		}
+		return users;
+    }
+	
+	//get an user by user id
+	public User pickUpUser(int id) {
+		User user = new User();
+		if(getUser(id).isPresent()) {
+			user = getUser(id).get();
+		}
+		return user;
+	}
+	
+	//get an user by user name
+	public User pickUpUser(String username) {
+		User user = new User();
+		if(getUser(username).isPresent()) {
+			user = getUser(username).get();
+		}
+		return user;
+	}
+	
+	
+	public void deleteUsers(String list) {
+		if(!list.isBlank()) {
+			String[] ids = list.split(",");
+			for(String id : ids) {
+				userRepository.deleteById(Integer.valueOf(id));
+			}
+		}
+    }
+	
+	public HashMap<String, String> mapUsers(String listId) {
+		String[] ids = listId.split(",");
+		HashMap<String, String> mapUsers = new HashMap<String, String>();
+		for(String id : ids) {
+			User user = pickUpUser(Integer.parseInt(id));
+			mapUsers.put(user.getUsername(), user.getRole());
+		}
+		return mapUsers;
+	}
+	
+	// check if password is correct
+	public Boolean checkUserPass (User user) throws NoSuchAlgorithmException {
+		String password1 = SecurityConfig.getEncryption(user.getPassword());
+		String password2 = pickUpUser(user.getUsername()).getPassword();
+		return password1.equals(password2);
+	}
+	
+	// check if administrators
+	public Boolean hasAdmin() throws NoSuchAlgorithmException {
+		return userRepository.findAllByRole("administrator").iterator().hasNext();
+	}
+	
+	
+    public Boolean checkCryptedPassword (String crypted_password, int id) throws NoSuchAlgorithmException {
+		String current_password = pickUpUser(id).getPassword();
+		return crypted_password.equals(current_password);
+	}
+
+
+}

@@ -1,0 +1,624 @@
+package com.item.item.controller;
+
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+
+import com.item.item.bundle.BundleItem100;
+import com.item.item.context.ItemContext;
+import com.item.item.context.UserContext;
+import com.item.item.model.StringObject;
+import com.item.item.model.User;
+import com.item.item.model.Item;
+import com.item.item.service.ItemService;
+import com.item.item.service.MsgErrorService;
+import com.item.item.service.OperationService;
+import com.item.item.service.ContextService;
+import com.item.item.service.UserService;
+
+
+
+@Controller
+public class Item100Controller {
+	
+	@Autowired
+	ItemService itemService;
+	
+	@Autowired
+	OperationService operationService;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	ContextService contextService;
+	
+	@Autowired
+	MsgErrorService msgErrorService;
+
+	
+	/** init **/
+	@GetMapping("/Item100/init")
+    public String home(Model model) throws FileNotFoundException, IOException, NoSuchAlgorithmException {
+		
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+
+		//set recent of itemContext false and pageNumber of userContext to << 0 >>
+		contextService.getItemContext().setRecent(false);
+		contextService.getUserContext().setPage(0);
+		
+		return "redirect:/Item100/board";
+		
+    }
+	
+	/** transaction **/
+	@GetMapping("/Item100/board")
+    public String board(Model model) throws NoSuchElementException {
+		
+		//check if connected
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//check if recent operation
+		if(!contextService.getRecent()) {
+			contextService.getItemContext().setReference("");
+		}
+		
+		//get url suffixe
+		String suffixe = contextService.getUserContext().getDisplay();
+		if(suffixe.equals("pagination")) {
+			suffixe = "listBooks" + contextService.getsizeAndPage();
+		}
+		
+		//set pageNumber of userContext
+		contextService.getUserContext().setPage(0);
+		
+		return "redirect:/Item100/" + suffixe;
+		
+    }
+	
+	@GetMapping("/Item100/display/{option}")
+    public String display(@PathVariable("option") String option, Model model) throws NoSuchElementException {
+		
+		//check if connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//check if recent operation
+		if(!contextService.getRecent()) {
+			contextService.getItemContext().setReference("");
+		}
+
+		//get url suffixe
+		String suffixe = "";
+		if(option.equals("scrollbar")) {
+			suffixe = "scrollbar";
+		}
+		else if(option.equals("pagination")) {
+			suffixe = "listBooks" + contextService.getsizeAndPage();
+		}
+		
+		//set display option in user context
+		contextService.getUserContext().setDisplay(option);
+		
+		//set display in user
+		User user  = userService.pickUpUser(contextService.getSessionContext().getUserId());
+		user.setDisplay(option);
+		
+		//save user
+		userService.saveUser(user);
+		
+		return "redirect:/Item100/" +  suffixe;
+		
+    }
+	
+	@GetMapping("/Item100/scrollbar")
+    public String scrollbar(Model model) throws IOException, ParseException, java.text.ParseException {
+		
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//set sorting order in user context
+		contextService.checkSetUserContextSorting();
+		
+		//get items and item context
+		Iterable<Item> items = itemService.getItems();
+		ItemContext line = contextService.getItemContext();
+		
+		//get user context and time(belong time zone)
+		UserContext userContext = contextService.getUserContext();
+
+		//get time(belong time zone)
+		String time = contextService.getTime(contextService.getUserContext().getTimezone());
+		
+		
+		//get row of scrollbar's position
+		int row =  line.isToFind() ? contextService.getItemContext().getRow(): 0;
+		
+		//get error message
+		String message = "";
+		if(!line.getReference().isBlank()) { 
+			message = BundleItem100.getAlertMessage(line, contextService.getUserContext().getTimezone());
+		}
+		
+		//add item and item context in page
+		model.addAttribute("userContext", userContext);
+		model.addAttribute("items", items);
+		model.addAttribute("line", line);
+		
+		//add department, language and time zone
+		/*
+		model.addAttribute("department", department);
+		model.addAttribute("langage", langage);
+		model.addAttribute("timezone", timezone);
+		*/
+		
+		
+		//add time (belong time zone) and scroll bar row in page
+		model.addAttribute("time", time);
+		model.addAttribute("row", row);
+		
+		//add message in page
+		model.addAttribute("message", message);
+
+		//check if has to find page or scroll bar position
+		//set toFind false and row 0 if not
+		if(line.isToFind()) {
+			contextService.setToFindFalse();
+			contextService.setRowNull();
+		};
+		
+		return "item100/scrollbar";
+    }
+
+	@RequestMapping(value = "/Item100/listBooks", method = RequestMethod.GET)
+	public String listBooks(Model model, 
+		     @RequestParam("page") Optional<Integer> page, 
+		     @RequestParam("size") Optional<Integer> size) 
+		    		 throws IOException, ParseException, java.text.ParseException {
+		
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//check and set sorting order
+		contextService.checkSetUserContextSorting();
+					
+		//get page and size of page
+		int defaultSize = contextService.getUserContext().getPageSize();
+		int currentPage = page.orElse(1);
+		int pageSize = size.orElse(defaultSize);
+		
+		//get page of items and number of pages
+		Page<Item> bookPage = itemService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
+		int totalPages = bookPage.getTotalPages();
+		
+		//get last operation (after a transaction) and find if page calculation needed
+		ItemContext line = contextService.getItemContext();
+		boolean isToFind = contextService.getItemContext().isToFind();
+		int userId = contextService.getSessionContext().getUserId();
+		
+		//get department and language
+		/*
+		String department = userService.pickUpUser(userId).getDepartment();
+		String langage = userService.pickUpUser(userId).getLangage();
+		String timezone = userService.pickUpUser(userId).getTimezone();
+		*/
+		UserContext userContext = contextService.getUserContext();
+		
+		//get time (belong time zone)
+		String time = contextService.getTime(contextService.getUserContext().getTimezone());
+		
+		//set page number in user context
+		contextService.getUserContext().setPage(currentPage);
+			    
+		//if items is empty: redirect
+		if(bookPage.getContent().isEmpty() && currentPage > 1) {
+			contextService.getUserContext().setPage(currentPage-1);
+			String op = contextService.getItemContext().getOperation();
+			if(op.equals("deletion")){
+				int row = contextService.getItemContext().getRow();
+			    contextService.getItemContext().setRow(row-1);
+			}
+		    return "redirect:/Item100/board";
+		}
+		
+		//if page needed to be calculate: change pageNum in userContext and redirect
+		if(isToFind) {
+			int row = contextService.getItemContext().getRow();
+			int pageNum = row%pageSize == 0 ? row/pageSize : row/pageSize + 1;
+		    if(pageNum != currentPage) {
+		    	contextService.getUserContext().setPage(pageNum);
+		    	return "redirect:/Item100/board";
+		    } 	
+		}
+			    
+		//add page number and page of item in page
+		model.addAttribute("page", currentPage);
+		model.addAttribute("bookPage", bookPage);
+		
+		//add item context item and user context in page
+		model.addAttribute("line", line);
+		model.addAttribute("userContext", userContext);
+		
+		//get time (belong time zone in page)
+		model.addAttribute("time", time);
+		
+		//add page numbers button in page
+		if (totalPages > 0) {
+			List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+				.boxed()
+				.collect(Collectors.toList());
+			model.addAttribute("pageNumbers", pageNumbers);
+		}
+		
+		//add alert  message in page
+		if(!line.getReference().isBlank()) {
+			String message = BundleItem100.getAlertMessage(line, contextService.getUserContext().getTimezone());
+			model.addAttribute("message", message);
+		}
+		
+		//set toFind of itemContext to false
+		if(isToFind) {
+			contextService.getItemContext().setToFind(false);
+		};
+			  			
+	    return "item100/listBooks.html";
+	}
+	
+	@GetMapping("/Item100/clean")
+    public String clean(Model model) throws FileNotFoundException, IOException {
+		
+		//check if connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//set recent of itemContext false
+		contextService.getItemContext().setRecent(false);
+
+		return "redirect:/Item100/board";
+		
+    }
+	
+	/** crud **/
+	@GetMapping("/Item100/transactions")
+    public String transactions(Model model) throws IOException, ParseException, java.text.ParseException {
+		
+		//check if connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+					
+		//get transactions text
+		String transactions = operationService.getOperations();
+		
+		//add transactions in page
+		model.addAttribute("transactions", transactions);
+		
+		return "item100/transactions";
+    }
+	
+	@GetMapping("/Item100/add")
+    public String add(Model model) throws IOException, ParseException, IllegalArgumentException, IllegalAccessException {
+		
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//create item
+		Item item = new Item();
+		item.setPrice("0");
+		
+		//get item context
+		if(contextService.getItemContext().isUpdate()) {
+			HashMap<String, String> map = msgErrorService.getMapModel();
+			item.setAttr(map.get("colour"), map.get("size"), map.get("graphics"), map.get("price"));
+			if(item.getPrice().isBlank()) {
+				item.setPrice("0");
+			}
+		}
+		
+		//get error message
+		String error = msgErrorService.getErrorMsg();
+		
+		//add item model and error in page
+		model.addAttribute("item", item);
+	 	model.addAttribute("error", error);
+		
+		//reset item context and error message
+		contextService.getItemContext().setUpdate(false);
+	 	msgErrorService.setModelError("", null);
+		
+        return "item100/add";
+    }
+	
+	@PostMapping("/Item100/additem")
+    public String addItem(Item item, BindingResult result, Model model) throws IOException, ParseException, 
+    java.text.ParseException, NoSuchAlgorithmException, IllegalArgumentException, IllegalAccessException {
+		
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+    	//set error and item context
+    	msgErrorService.setMapModel(item.getAttrMap());
+    	contextService.getItemContext().setUpdate(true);
+
+		//check if errors
+		if(msgErrorService.checkingModelError(item.getValues(), "item")) {
+			return "redirect:/Item100/add";
+		}
+		
+		//save item for have an id
+        itemService.saveItem(item);
+        
+		//get reference for item from id
+        String zeros = "000";
+        String strId = String.valueOf(item.getId());
+        String reference = zeros.substring(0, zeros.length() - strId.length()) + strId;
+        
+        //set item
+        item.setReference(reference);
+        item.getSizenumber(item.getSize());
+        item.setDepartment(contextService.getUserContext().getDepartment());
+        item.trim();
+        
+        //save item
+        itemService.saveItem(item);
+        
+        //save operation and limit the number of saved operation
+        operationService.saveThatOperation(item.getReference(), item.getValuesString(), "ADDITION");
+        operationService.hasToDelete(contextService.getUserContext().getDepartment());
+      	
+      	//set itemContext
+        contextService.getItemContext().setUpdate(false);
+        contextService.setItemContext(item.getId(), item.getReference(), "addition", 0, true, true);
+        
+        //reset error context
+        msgErrorService.setModelError("", item.getAttrMap());
+   
+        return "redirect:/Item100/board";
+    }
+	
+	
+	@GetMapping("/Item100/update/{id}")//add user later
+    public String update(@PathVariable("id") int id, Model model) throws IOException, ParseException, 
+    IllegalArgumentException, IllegalAccessException {
+		
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//check if item from user
+		if(!itemService.checkItemDepartment(id)) {
+			return "redirect:/urlError/update/" + String.valueOf(id);
+		}
+		
+		//get item
+		Item item = itemService.pickUpItem(id);
+		
+		//set item belong error context
+		if(contextService.getItemContext().isUpdate()) {
+			HashMap<String, String> map = msgErrorService.getMapModel();
+			item.setAttr(map.get("colour"), map.get("size"), map.get("graphics"), map.get("price"));
+		}
+		
+		//get error message
+		String error = msgErrorService.getErrorMsg();
+		
+		//add models in page
+		model.addAttribute("item", item);
+		model.addAttribute("error", error);
+		
+		//set item context
+		contextService.getItemContext().setUpdate(false);
+		
+		//reset error message
+		msgErrorService.setModelError("", item.getAttrMap());
+		
+		return "item100/update";
+    }
+	
+	@PostMapping("/Item100/updateitem")
+    public String updateItem(Item item, BindingResult result, Model model) 
+    		throws IOException, ParseException, java.text.ParseException, NoSuchAlgorithmException, 
+    		IllegalArgumentException, IllegalAccessException {
+		
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//set item context and error context
+		contextService.getItemContext().setUpdate(true);
+    	msgErrorService.setMapModel(item.getAttrMap());  	
+
+		//check if errors
+		if(msgErrorService.checkingModelError(item.getValues(), "item")) {
+			return "redirect:/Item100/update/" + String.valueOf(item.getId());
+		}
+		
+		//set item
+		item.getSizenumber(item.getSize());
+        item.setDepartment(contextService.getUserContext().getDepartment());
+        item.trim();
+        
+        //save item
+		itemService.updateItem(item);
+		
+		//save the operation and limit the number of saved operation
+		operationService.saveThatOperation(item.getReference(), item.getValuesString(), "UPDATE");
+        operationService.hasToDelete(contextService.getUserContext().getDepartment());
+
+		//set itemContext
+		contextService.setItemContext(item.getId(), item.getReference(), "update", 0, true, true);
+		contextService.getItemContext().setUpdate(false);
+		
+        return "redirect:/Item100/board";
+    }
+	
+	@GetMapping("/Item100/delete/{id}")//add user later
+    public String delete(@PathVariable("id") int id, Model model) throws IOException, ParseException {
+		
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//check if item from user
+		if(!itemService.checkItemDepartment(id)) {
+			return "redirect:/urlError/delete/" + String.valueOf(id);
+		}
+		
+		//get item to delete
+		Optional<Item> item = itemService.getItem(id);
+		
+		//add item model in page
+		model.addAttribute("item", item);
+		
+		return "item100/delete";
+    }
+	
+	@PostMapping("/Item100/deleteitem")
+    public String deleteitem(Item item, BindingResult result, Model model) 
+    		throws IOException, ParseException, java.text.ParseException {
+		
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//delete the item
+		itemService.deleteItem(item.getId());
+		
+		//save operation and limit the number of saved operation
+		operationService.saveThatOperation(item.getReference(), item.getValuesString(), "DELETION");
+        operationService.hasToDelete(contextService.getUserContext().getDepartment());
+        
+        //set itemContext
+        int row = contextService.getMapRow().get(item.getId());
+		contextService.setItemContext(item.getId(), item.getReference(), "deletion", row, true, true);
+
+        return "redirect:/Item100/board";
+    }
+
+	/** sorting **/
+	@GetMapping("/Item100/sorting")
+    public String sorting(Model model) throws IOException, ParseException, java.text.ParseException {
+		
+		//check if connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//get language
+		String lang = contextService.getUserContext().getLangage();
+		
+		//get sorting from user context and  from error context
+		String sortingUser = contextService.getUserContext().getSorting();
+		String sortingErr = msgErrorService.getSorting();
+		
+		//if needed: translate sorting from user context
+		if(!lang.equals("en")) {
+			sortingUser = BundleItem100.translateToLang(sortingUser);
+		}
+
+		//get error message
+		String error = msgErrorService.getErrorMsg();
+		
+		//set sorting object
+		StringObject sortingObject = new StringObject();
+		String sorting = "";
+		if(error.isEmpty()) {
+			sorting = sortingUser;
+		}
+		else {
+			sorting = sortingErr;
+		}
+		sortingObject.setText(sorting);
+		
+		//add models in page
+		model.addAttribute("sorting", sortingObject);
+		model.addAttribute("error", error);
+		
+		//reset error message and sorting context
+		msgErrorService.getMsgErrorContext().setErrorMsg("");
+		msgErrorService.getMsgErrorContext().setSortingErr("");
+		
+		return "item100/sorting";
+    }
+	
+	@PostMapping("/Item100/updatesorting")
+    public String sorting(StringObject sorting, BindingResult result, Model model) throws IOException, ParseException {
+		
+		//check if connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//get sorting and error message
+		String sortingOrder = sorting.getText();
+		String errorMsg = msgErrorService.getSortingOrderMsg(sortingOrder);
+		
+		//redirect if error (error message not empty)	
+		if(!errorMsg.isEmpty()) {
+			msgErrorService.getMsgErrorContext().setSortingErr(sortingOrder);
+			msgErrorService.setMsgErrorContext(errorMsg);
+			return "redirect:/Item100/sorting";
+		}
+		
+		//get user
+		int idUser = contextService.getSessionContext().getUserId();
+		User user = userService.pickUpUser(idUser);
+		
+		//set sorting in user
+		String translation = BundleItem100.translateToEN(sortingOrder);
+		user.setSorting(translation);
+		
+		//save user
+		userService.saveUser(user);
+		
+		//set User context
+		contextService.getUserContext().setSorting(translation);
+		
+		//set error message context
+		msgErrorService.getMsgErrorContext().setSortingErr("");
+		msgErrorService.setMsgErrorContext("");
+		
+		return "redirect:/Item100/sorting";
+    }
+    
+}

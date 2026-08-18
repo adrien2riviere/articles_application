@@ -1,0 +1,26 @@
+package com.item.item;
+
+import java.io.IOException;
+import org.json.simple.parser.ParseException;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import lombok.Data;
+
+
+@Data
+@SpringBootApplication
+public class ItemApplication implements CommandLineRunner {
+	
+	public static void main(String[] args) throws IOException, ParseException {
+		SpringApplication.run(ItemApplication.class, args);
+	}
+	
+	@Override
+    public void run(String... args) throws Exception {
+		
+	}
+	
+	//http://localhost:9000/
+
+}

@@ -1,0 +1,129 @@
+body {
+	padding-inline-start:1em;
+	padding-inline-end:4em;
+	padding-top:1em;
+}
+
+h2 {
+	font-family:Arial;
+	font-size: 1.2em;
+	display:inline;
+	margin-left:0.4em;
+}
+
+h3 {
+	margin-left:0.4em;
+}
+
+table {
+	background-color:white;
+	border-style: solid;
+  	border-width: thin;/*medium*/
+  	border-collapse: collapse;
+  	width: 100%;
+  	cursor: default;/*avoir fleche sourie quand survole texte*/
+  	table-layout: fixed;
+  	margin-top:1em;
+  	margin-bottom:1em;
+}
+
+thead{
+	background-color:#6efaa0;
+	display: block;
+    overflow-y: scroll;
+}
+
+tbody {
+    display: block;
+    width: 100%;
+    overflow-y: scroll;
+    height:28em;
+}
+
+th {
+	font-size: 1em;
+  	text-align: center;
+  	overflow:hidden;
+  	text-overflow: ellipsis;
+  	white-space:pre;
+  	width: 20%;
+  	font-family:Helvetica, Arial;
+  	padding-top:0.6em;
+  	padding-bottom:0.6em;
+}
+
+td {
+	text-align:center;
+	padding-top:0.6em;
+	padding-bottom:0.6em;
+	width: 20%;
+	font-family:Calibri;
+}
+
+tr {
+    display: block;
+	display: flex;
+	border-bottom:solid;
+	border-width:thin;
+	border-color:lightgrey
+}
+
+
+tbody > tr {
+    border-color:lightgrey;
+}
+
+tr.addition {
+	background-color: rgb(160, 230, 210);
+}
+
+
+img {
+	height:0.7em;
+	width:0.7em;
+}
+
+select {
+	 height:1.6em;
+}
+
+.update {
+	color:#008080;
+	font-weight: bold;
+}
+
+.buttons {
+	margin-top:2em;
+	margin-bottom:2em;
+}
+
+.buttons > a {
+	margin:1em;
+	background-color: lightgrey;
+	padding:0.4em;
+	text-decoration:none;
+	color:black;
+	border-style:solid;
+	border-width:thin;
+	border-radius:0.16em;
+}
+
+.grey {
+	background-color:#e7e7e7!important;
+}
+
+#logout{
+	background-color: #d2d2d2;
+	margin-right:4em;
+	font-family:calibri;
+	font-size:0.94em;
+}
+
+#submit{
+	padding-top:0.1em;
+	padding-bottom:0.1em;
+}
+
+#error {
+	margin-left:4em;
+}

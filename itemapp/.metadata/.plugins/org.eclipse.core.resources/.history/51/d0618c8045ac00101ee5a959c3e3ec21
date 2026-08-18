@@ -1,0 +1,227 @@
+package com.item.item.service;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import com.item.item.bundle.BundleMessage;
+import com.item.item.context.ItemContext;
+import com.item.item.context.MapRowContext;
+import com.item.item.context.UserContext;
+import com.item.item.model.Item;
+import com.item.item.repository.ItemRepository;
+
+
+@Service
+public class ItemService {
+	
+	@Autowired
+	ItemRepository itemRepository;
+	
+	@Autowired
+	ApplicationContext context;
+	
+	
+	//CRUD operations
+	public Optional<Item> getItem(int id) {
+        return itemRepository.findById(id);
+    }
+
+	//get items according to sorting order
+    public Iterable<Item> getItems() throws IOException, ParseException {
+    	
+    	//init variables
+    	int counter = 0;
+    	//int userId = 0;
+    	String department;
+    	String sorting = "";
+    	String reference = "";
+    	String[] list = null;
+    	
+    	//set MapRow empty
+    	context.getBean(MapRowContext.class).setMapRow(new HashMap<Integer, Integer>());
+    	
+    	//get list from sorting
+    	sorting = context.getBean(UserContext.class).getSorting();
+    	sorting = sorting.replaceFirst("item no", "reference");
+    	sorting = sorting.replaceFirst("size", "sizenumber");
+    	list = sorting.split(", ");
+    	
+    	//create sort criteria and get userId
+    	Sort sort = Sort.by(Sort.Direction.ASC, list);
+    	
+    	//get required items
+    	department = context.getBean(UserContext.class).getDepartment();
+    	Iterable<Item> items = itemRepository.findAllByDepartment(department, sort);
+    	
+    	//get reference of item context
+    	reference = context.getBean(ItemContext.class).getReference();
+    	
+    	//loop for complete items (row and size number)
+    	//if needed set item context
+    	for(Item item : items) {
+    		counter += 1;
+    		context.getBean(MapRowContext.class).addMapRow(item.getId(), counter);//to delete ?
+    		item.setTable_row(counter);
+    		item.setSize(BundleMessage.getSize(item.getSize()));
+    		if(reference.equals(item.getReference())) {
+    			context.getBean(ItemContext.class).setRow(counter);
+    		}	
+    	}
+    	
+        return items;
+    }
+    
+    public Page<Item> findPaginated(Pageable pageable) throws IOException, ParseException {
+    	
+    	//page variables
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+        
+        //list of items and sublist
+        List<Item> items = getItemsList();
+        List<Item> list;
+        
+        //complete sublist
+        if (items.size() < startItem) {
+            list = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, items.size());
+            list = items.subList(startItem, toIndex);
+        }
+
+        //making page
+        Page<Item> bookPage
+          = new PageImpl<Item>(list, PageRequest.of(currentPage, pageSize), items.size());
+
+        return bookPage;
+    }
+	
+    //get items for making page
+	public List<Item> getItemsList() throws IOException, ParseException {
+    	
+		//make list with iterable collection
+    	Iterable<Item> items = getItems();
+    	List<Item> list = StreamSupport 
+                .stream(items.spliterator(), false) 
+                .collect(Collectors.toList());
+    	
+        return list;
+    }
+
+    public void deleteItem(int id) {
+    	itemRepository.deleteById(id);
+    }
+
+    public Item saveItem (Item item) {
+    	Item savedItem = itemRepository.save(item);
+        return savedItem;
+    }
+    
+    public Item updateItem (Item item) throws IOException, ParseException {
+    	Item savedItem = itemRepository.save(item);
+        return savedItem;
+    }
+    
+    //if exists get item
+    public Item pickUpItem(int id) {
+    	Item item = new Item();
+		if(getItem(id).isPresent()) {
+			item = getItem(id).get();
+		}
+        return item;
+    }
+    
+    //check if id of item is valid
+    /**
+    public boolean checkItemId(int idItem) {
+    	int idUser = context.getBean(SessionContext.class).getUserId();
+    	if(getItem(idItem).isPresent()) {
+    		return (getItem(idItem).get().getUserid() == idUser);
+    	}
+    	return false;
+    }
+    **/
+    
+    /**
+    public String getFields() {
+    
+    	String fieldsString = "";
+    	Field[] fields = object.getClass().getDeclaredFields();
+    	
+		for(Field field : fields) {
+			fieldsString += field.getName() + "-";
+		}
+		
+		if(!fieldsString.isBlank()){
+			fieldsString = fieldsString.substring(-1)
+		}
+		
+		return fieldsString;
+    }
+    **/
+    
+    /**
+    public String getSortingReference() {
+		
+		String fieldsString = "";
+    	Field[] fields = object.getClass().getDeclaredFields();
+    	
+		for(Field field : fields) {
+			fieldsString += field.getName() + ", ";
+		}
+		
+		if(!fieldsString.isBlank()){
+			fieldsString = fieldsString.substring(-2)
+		}
+		
+		return fieldsString;
+    }
+    **/
+    
+    /**
+    public String getSortingExemple() {
+		String fieldsString = "";
+    	Field[] fields = object.getClass().getDeclaredFields();
+    	
+		for(Field field : fields) {
+			if(!field.getName().equals("item no")) {
+				fieldsString += field.getName() + ", ";
+			}
+		}
+		
+		if(!fieldsString.isBlank()){
+			fieldsString = fieldsString.substring(-2)
+		}
+		
+		return fieldsString;
+    }
+    **/
+    
+    //check if department of item is valid
+    public boolean checkItemDepartment(int idItem) {
+    	String userDepartment = context.getBean(UserContext.class).getDepartment();
+    	if(getItem(idItem).isPresent()) {
+    		String itemDepartment = getItem(idItem).get().getDepartment();
+    		return itemDepartment.equals(userDepartment);
+    	}
+    	return false;
+    }
+
+   
+}

@@ -1,0 +1,94 @@
+#menu page
+menu-title=Choisir une transaction 
+menu-label=Transaction
+items-customer=ITM100 - Articles pour clients
+logout-tip=deconnection
+
+#records page
+records-title=Liste des {0}
+home-empty=pas d'{0} en base de données
+layout-tip=disposition
+sorting-tip=ordre de tri
+records-tip=historique
+
+#messages for records page
+add-message=Date - Une ligne a été ajoutée (réf: var1, ligne: var1)
+update-message=Date - Une ligne a été modifiée (réf: var1, ligne: var1)
+delete-message=Date - Une ligne a été supprimée (réf: var1)
+home-format=dd/MM/yyyy - HH:mm:ss
+clear-message=supprimer le message
+
+
+#size values
+small=small
+medium=medium
+big=big
+
+
+#operation pages
+add-title=Ajouter un {0}
+update-title=Modifier un {0}
+delete-title=Supprimer un {0}
+delete-confirmation-message=Voulez-vous vraiment supprimer cet {0} ?
+
+
+#internationalization page
+inter-title=Internationalisation
+inter-label=Language :
+inter-label-zone=Fuseau horaire :
+inter-label-action=Action :
+inter-input=français
+inter-check=Activer le fuseau horaire
+selection-EN=Grande Bretagne - Europe/Londre
+selection-FR=France - Europe/Paris
+
+
+#sorting page
+sorting-title=Définir l'ordre de tri
+sorting-label-fields=Champs :     
+sorting-label-exemple=Exemple
+sorting-label-order=Définir l'ordre de tri
+sorting-label-action=Action
+sorting-field-validate=valider
+
+
+#history page
+history-label=Historique des opérations
+history-operation=num    yyyy-mm-dd  HH:mm:ss  ref  OPERATION	[description]
+history-ADDITION=CREATION\t
+history-UPDATE=MODIFICATION
+history-DELETION=SUPPRESSION
+history-format=yyyy-MM-dd HH:mm:ss
+
+
+#timezone format
+zone-FR=Europe/Paris
+zone-EN=Europe/Londre
+
+
+#department page 
+department-title=Indiquer le departement
+compagny-label=Société
+division-label=Division
+
+
+#error messages for menu
+menu-not-error=La transaction VALUE n'est pas valide !
+
+#error messages for fields
+field-required=Le champ VALUE est requis !
+field-blank=Le champ VALUE ne peut pas être blanc !
+
+#error messages for price
+price-num =Le prix doit être un nombre !
+price-neg =Le prix ne peut être négatif !
+price-big =Le prix ne peut être plus grand que 100 !
+price-dec =Le prix ne doit pas avoir plus de 2 décimales !
+
+#error messages department
+department-title=Indiquer le departement
+compagny-invalid=La société saisie VALUE n'est pas valide !
+division-invalid=La division saisie VALUE n'est pas valide !
+compagny-not=La société VALUE n'existe pas !
+division-not=La division VALUE n'existe pas pour la société CONSTANTE !
+

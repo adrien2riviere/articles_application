@@ -1,0 +1,155 @@
+#home page
+
+#titles
+home-title=List of items
+
+#table headers
+item-no-header= item no
+color-header= colour
+size-header= size
+graphics-header= graphics
+price-header= price
+update-header= update
+delete-header= delete
+
+#if no item in database
+home-empty=no item in database
+
+#messages
+add-message=Date - A line has been added (ref: var1, line: var2)
+update-message=Date - A line has been updated (ref: var1, line: var2)
+delete-message=Date - A line has been deleted (ref: var1)
+home-format=dd/MM/yyyy - HH:mm:ss
+clear-message=clear the message
+
+
+#size values
+
+#values
+small=small
+medium=medium
+big=big
+
+
+#add page
+
+#titles
+add-title=Add a item
+
+#labels
+add-color-label=colour
+add-size-label=size
+add-graphics-label=graphics
+add-price-label=price
+
+
+#update page
+
+#titles
+update-title=Update a item
+
+#labels
+update-item-no-label=item no
+update-color-label=colour
+update-size-label=size
+update-graphics-label=graphics
+update-price-label=price
+
+
+#delete page
+
+#titles
+delete-title=Delete a item
+
+#labels
+delete-item-no-label=item no
+delete-color-label=colour
+delete-size-label=size
+delete-graphics-label=graphics
+delete-price-label=price
+
+#deletion message
+delete-confirmation-message=Do you really want to delete this item ?
+
+
+#internationalization page
+
+#titles
+inter-title=Internationalization
+
+#labels
+inter-label=Langage :
+inter-label-zone=Time zone :
+inter-label-action=Action :
+
+#inputs
+inter-input=english
+inter-check=Enable time zone
+
+#time zone selection EN
+selection-EN=Great Britain - Europe/London
+
+#time zone selection FR
+selection-FR=France - Europe/Paris
+
+
+#sorting page
+
+#titles
+sorting-title=Define the sorting order
+
+#labels
+sorting-label-fields=Fields :   
+sorting-label-exemple=Example
+sorting-label-order=Sorting order
+sorting-label-action=Action
+
+#fields
+sorting-field-fields=item no, colour, size, graphics, price
+sorting-field-exemple=colour, size, graphics, price
+sorting-field-sorting=item no-colour-size-graphics-price
+sorting-field-validate=validate
+
+
+#history page
+
+#label
+history-label=Transactions records
+
+#message (not used)
+history-operation=num    yyyy-mm-dd  HH:mm:ss  ref  OPERATION	[description]
+
+#operations
+history-ADDITION=ADDITION
+history-UPDATE=UPDATE
+history-DELETION=DELETION
+
+#date format
+history-format=yyyy-MM-dd HH:mm:ss
+format=dd-MM-yyyy - HH:mm:ss
+
+#time zone
+zone-FR=Europe/Paris
+zone-EN=Europe/London
+
+#error messages
+colour-required=The colour field is required !
+colour-blank=The colour field cannot be blank !
+size-required=The size field is required !
+size-blank=The size field cannot be blank !
+graphics-required=The graphic field is required !
+graphics-blank=The graphics field cannot be blank !
+
+#error messages for price
+price-num =The price must be a number !
+price-neg =The price could not be negative !
+price-big =The price could not be greater than 100 !
+price-dec =The price must not have more than 2 decimals !
+
+#error messages department
+compagny-invalid="The compagny entry VALUE was not valid !";
+division-invalid="The division entry VALUE was not valid !";
+compagny-not="The compagny VALUE doesn't exist !";
+division-not="The division VALUE doesn't exist !";
+
+

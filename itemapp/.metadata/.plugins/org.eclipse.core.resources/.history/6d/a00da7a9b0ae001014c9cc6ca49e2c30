@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Scrollbar</title>
+        <link rel="stylesheet" type="text/css" href="../css/item100/scrollbar.css">
+    </head>
+    <body>
+    	<div id="title">
+    		<h2 class="h2" th:text ="#{records-title(#{items-model})}"></h2>
+    		<a id="menulink" th:text="#{item-menu}" href="/menu"></a>
+    		<span id="langageinfo" th:text="'langage/timezone:'"></span>
+    		<a id="language" href="/langage" th:text="${userContext.langage} + '/' + ${userContext.timezone}"></a>
+    		<span id="departmentinfo" th:text="'departement:'"></span>
+    		<a id="departmentlink" href="/department">
+    			<span th:text="${department}"></span>
+    		</a>
+    		<span id="localtime" th:text="${time}"></span>
+    	</div>
+        <div class="entete">
+        	<a id="add" href="/Item100/add">
+        		<img id="data_base" src="../images/data_base.png" alt="database logo">
+        		<img id="add_logo" src="../images/add_logo.png" alt="add logo">
+        		<span id="addtip" th:text="#{add-tip}"></span>
+        	</a>
+        	<a id="layout" th:href="@{/Item100/display/{option}(option='pagination')}">
+        		<img src="../images/pagination.png" alt="pagination icon">
+        		<span id="layouttip" th:text="#{layout-tip}"></span>
+        	</a>
+        	<a id="sorting" href="/Item100/sorting">
+        		<img src="../images/sorting.png" alt="sorting logo">
+        		<span id="sortingtip" th:text="#{sorting-tip}"></span>
+        	</a>
+        	<a id="history" href="/Item100/transactions">
+        		<img src="../images/list.png" alt="list icon">
+        		<span id="historytip" th:text="#{records-tip}"></span>
+        	</a>
+        </div>
+        <table class="tableFixHead">
+            <thead>
+                <tr>
+                	<th class="row_table"></th>
+                	<th th:text="#{item-no-item}"></th>
+                    <th th:text="#{item-colour}"></th>
+                    <th th:text="#{item-size}"></th>
+                    <th th:text="#{item-graphics}"></th>
+                    <th th:text="#{item-price}"></th>
+                    <th class="operation" th:text="#{item-operation}"></th>
+                </tr>
+            </thead>
+            <tbody id="scrollable" th:value="${row}">
+            	<tr id="noborder" th:if="${items.empty}">
+                    <td id="empty" colspan="3" th:text="#{home-empty}"></td>
+                </tr>
+                <tr th:class="(${item.reference} == ${line.reference}) ? ${line.operation} : line" th:each="item:${items}">
+                	<td class="row_table" th:text="${item.table_row}"> row </td>
+                	<td th:text="${item.reference}"></td>
+                    <td th:text="${item.colour}"></td>
+                    <td th:text="${item.size}"></td>
+                    <td th:text="${item.graphics}"></td>
+                    <td th:text="${item.price}"></td>
+                	<td class="operation">
+                		<div class="dropdown">
+				          <button id="update" th:onclick="'myFunction(' + ${item.table_row} + ')'" class="dropbtn">o</button>
+				          <div th:id="'myDropdown' + ${item.table_row}" class="dropdown-content">
+				              <a th:text="#{item-update}" th:href="@{/Item100/update/{id}(id=${item.id})}"></a>
+				              <a th:text="#{item-delete}" th:href="@{/Item100/delete/{id}(id=${item.id})}"></a>
+				              <a>Launch</a>
+				          </div>
+				        </div>
+                	</td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${message != ''}" class="message">
+			<span th:text="${message}"></span>
+			<a id="clear" href="/Item100/clean" th:text="#{clear-message}"></a>
+        </div>
+        <script type="text/javascript" src="../js/item100/board.js"></script>
+        <script type="text/javascript" src="../js/item100/scroll.js"></script>
+        <script type="text/javascript" src="../js/item100/contextscroll.js"></script>
+    </body>
+</html>

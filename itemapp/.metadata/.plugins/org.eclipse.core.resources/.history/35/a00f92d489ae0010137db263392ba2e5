@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Administration - add User</title>
+        <link rel="stylesheet" type="text/css" href="/../css/admin/admadd.css">
+    </head>
+    <body>
+        <h2>Administration - add a user</h2>
+        <a href="/admin/users">back to the user's list</a>
+        <h3>User form</h3>
+        <form th:action="@{/admin/user/adduser}" th:object="${user}" method="post" novalidate>
+        	<label>username</label>
+        	<input type="text" th:field="*{username}" maxlength="25"></input>
+        	<span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span><br>
+        	<label>password</label>
+        	<input type="text" th:field="*{password}" maxlength="25"></input>
+        	<span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span><br>
+        	<label>role</label>
+			<select id="role" th:field="*{role}" required>
+	        	<option value="" hidden="hidden">...</option>
+				<option value="user">user</option>
+				<option value="administrator">administrator</option>
+			</select> 
+        	<span th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></span><br>
+        	<label>langage</label>
+	        <select id="langage" th:field="*{langage}" disabled>
+	        	<option value="" selected="selected" hidden="hidden">...</option>
+				<option value="fr" th:text="french"></option>
+				<option value="en" th:text="english"></option>
+			</select>
+			<span th:if="${#fields.hasErrors('langage')}" th:errors="*{langage}"></span><br>
+			<label>timezone</label>
+	        <select id="timezone" th:field="*{timezone}" disabled>
+	        	<option value="" selected="selected" hidden="hidden">...</option>
+				<option value="FR" th:text="#{timezone-FR}"></option>
+				<option value="EN" th:text="#{timezone-EN}"></option>
+			</select> 
+			<span th:if="${#fields.hasErrors('timezone')}" th:errors="*{timezone}"></span><br>
+			<label>display mode</label>
+			<select id="display" th:field="*{display}" disabled>
+	        	<option value="" selected="selected" hidden="hidden">...</option>
+				<option value="scrollbar">scrollbar</option>
+				<option value="pagination">pagination</option>
+			</select>
+			<span th:if="${#fields.hasErrors('display')}" th:errors="*{display}"></span><br>
+			<label>department</label>
+        	<input type="text" th:field="*{department}" maxlength="8"></input>
+        	<span th:if="${#fields.hasErrors('department')}" th:errors="*{department}"></span><br>
+        	<input id="button" type="submit" value="add the user">
+        	<span id = "error_display"></span>
+        </form>
+        <div th:if="${error} != ''">
+        	<p><span th:text="${error}"></span><p>
+        </div>
+        <script type="text/javascript" src="/../js/admin/admadd.js"></script>
+    </body>
+</html>

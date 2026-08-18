@@ -1,0 +1,25 @@
+package com.item.item.repository;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import com.item.item.model.Department;
+
+
+
+@Repository
+public interface DepartmentRepository extends CrudRepository <Department, Integer> {
+	
+	Iterable<Department> findAll();
+	
+	Iterable<Department> findAllByCono(String cono);
+	
+	Iterable<Department> findAllByConoAndDivi(String cono, String divi);
+
+	void deleteById(int id);
+	
+	void deleteByCono(String cono);
+
+	void existsByConoAndDivi(String cono, String divi);
+
+}

@@ -1,0 +1,115 @@
+package com.item.item.service;
+
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+
+import com.item.item.model.Department;
+import com.item.item.repository.DepartmentRepository;
+
+@Service
+public class DepartmentService {
+	
+	
+	@Autowired
+	DepartmentRepository departmentRepository;
+	
+
+	public Iterable<Department> getDepartments() {
+		return departmentRepository.findAll();
+	}
+	
+	public Iterable<Department> getDepartments(String cono) {
+		return departmentRepository.findAllByCono(cono);
+	}
+	
+	public Iterable<Department> getDepartments(String cono, String divi) {
+		return departmentRepository.findAllByConoAndDivi(cono, divi);
+	}
+	
+	
+	public Department saveDepartment(Department department) {
+		return departmentRepository.save(department);
+	}
+	
+	public void deleteDepartment(int id) {
+		departmentRepository.deleteById(id);
+	}
+	
+	public void deleteThatDepartment(Department department) {
+		Iterable<Department> departments = getDepartments(department.getCono(), department.getDivi());
+		for(Department dep : departments) {
+			deleteDepartment(dep.getId());
+		}
+	}
+	
+	public boolean checkDepartment(String department) {
+		Pattern pattern = Pattern.compile("[0-9]{3}/[0-9]{3}");
+    	return pattern.matcher(department).matches();
+	}
+	
+	public boolean isDepartment(String department) {
+		Pattern pattern = Pattern.compile("[0-9]{3}/[0-9]{3}");
+    	return pattern.matcher(department).matches();
+	}
+	
+	public Iterable<String> getCompagnies() {
+		Iterable<Department> departments = departmentRepository.findAll();
+		List<String> compagnies = new ArrayList<String>();
+		for(Department department : departments) {
+			if(!compagnies.contains(department.getCono())) {
+				compagnies.add(department.getCono());
+			}
+		}
+		Iterable<String> iterable = compagnies;
+		return iterable;
+	}
+
+	public Iterable<String> getDivisions(String cono) {
+		
+		Iterable<Department> departments = departmentRepository.findAll();
+		List<String> divisions = new ArrayList<String>();
+		for(Department department : departments) {
+			if(cono.equals(department.getCono())) {
+				divisions.add(department.getDivi());
+			}
+		}
+		Iterable<String> iterable = divisions;
+		return iterable;
+	}	
+	
+	
+	public boolean getConoMsg(String cono) {
+		
+		Iterable<Department> departments = getDepartments();
+		
+		for(Department department : departments) {
+			if(cono.equals(department.getCono())) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean getDiviMsg(String cono, String divi) {
+		
+		Iterable<Department> departments = getDepartments();
+		
+		for(Department department : departments) {
+			if(cono.equals(department.getCono())) {
+				if(divi.equals(department.getDivi())) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+
+}

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Administration - add User</title>
+        <link rel="stylesheet" type="text/css" href="/../css/admin/admadd.css">
+    </head>
+    <body>
+        <h2>Administration - add a user</h2>
+        <a href="/admin/users">back to the user's list</a>
+        <div id="divform">
+    		<h2>create first user confirmation</h2>
+        	<p>Your password had been updated !</p>
+        	<a href="/logout">log out</a>
+    	</div>
+    </body>
+</html>

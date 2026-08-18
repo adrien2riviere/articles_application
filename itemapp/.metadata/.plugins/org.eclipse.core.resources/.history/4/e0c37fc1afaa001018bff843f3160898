@@ -1,0 +1,52 @@
+
+//init variables
+var element =  document.getElementsByTagName('tbody')[0];
+var row = parseInt(element.getAttribute('value'));
+var position = 0;
+
+
+//set cookie
+if(row == 0){
+	position = getCookie("position");
+}
+else{
+	if(row > 5){
+		let height = document.getElementsByTagName('td')[0].offsetHeight;
+		position = Math.max(height*(row-2), 0);
+	}
+	document.cookie = "position=" + element.scrollTop;
+}
+
+//set scroll's position
+element.scrollTo(0, position)
+element.addEventListener("scroll", setCookie);
+
+
+//set cookie function
+function setCookie() {
+  document.cookie = "position=" + element.scrollTop;
+}
+
+//get cookie function
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+//reset scroll cookie when logout
+function resetscroll(e){
+	if(e.target.parentNode.id='logoutlink'){
+		document.cookie = "position=0";
+	}
+}

@@ -1,0 +1,65 @@
+package com.item.item.config;
+
+import java.util.HashMap;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.item.item.context.ActionContext;
+import com.item.item.context.ItemContext;
+import com.item.item.context.MapRowContext;
+import com.item.item.context.MsgErrorContext;
+import com.item.item.context.UserContext;
+
+@Configuration
+public class ContextConfig {
+	
+	//define context for user
+	@Bean
+	public UserContext UserContext() {
+		UserContext userContext = new UserContext("", "", "", "", 0, 0, false);
+	    return userContext;
+	}
+	
+	//define context for item
+	@Bean
+	public ItemContext ItemContext() {
+		ItemContext itemContext = new ItemContext(0, "", "", 0, false, false);
+	    return itemContext;
+	}
+	
+	@Bean
+	public ActionContext ActionContext() {
+		ActionContext actionContext = new ActionContext("", "");
+	    return actionContext;
+	}
+	
+	//define context for error in form
+	@Bean
+	public MsgErrorContext MsgErrorContext() {
+		
+		//get maps from models
+		HashMap<String, String> mapUser = new HashMap<String, String>();
+		HashMap<String, String> mapModel = new HashMap<String, String>();
+		HashMap<String, String> mapAction= new HashMap<String, String>();
+		
+		mapUser.put("username", "");
+		mapUser.put("password", "");
+		mapUser.put("langage", "");
+		mapUser.put("timezone", "");
+		
+		mapAction.put("operation", "");
+		mapAction.put("listId", "");
+		
+		MsgErrorContext errorContext = new MsgErrorContext("", mapUser, mapModel, mapAction);
+		
+	    return errorContext;
+	}
+	
+	@Bean
+	public MapRowContext MapRow() {
+		MapRowContext mapRow = new MapRowContext();
+	    return mapRow;
+	}
+
+}

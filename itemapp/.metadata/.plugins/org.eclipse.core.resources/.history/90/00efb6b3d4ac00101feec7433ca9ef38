@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Administration - add User</title>
+        <link rel="stylesheet" type="text/css" href="/../css/admin/admadd.css">
+    </head>
+    <body>
+        <h2>Administration - add a user</h2>
+        <div id="divform">
+    		<h2>Confirmation</h2>
+        	<p>The first user had been created !</p>
+        	<a href="admin/admlogin">go to login page</a>
+    	</div>
+    </body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Administration - update User</title>
+        <link rel="stylesheet" type="text/css" href="/../css/admin/admupdate.css">
+    </head>
+    <body>
+        <h2>Administration - update a user</h2>
+        <a href="/admin/users">back to the user's list</a>
+        <h3>User form</h3>
+        <form th:action="@{/admin/user/updateuser}" th:object="${user}" method="post" novalidate>
+        	<input type="text" th:field="*{id}" hidden=true></input>
+        	<label>username</label>
+        	<input type="text" th:field="*{username}" disabled></input>
+        	<span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span><br>
+        	<label>new password</label>
+        	<input type="text" th:field="*{password}" max="25"></input>
+        	<span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span><br>
+        	<input id="button" type="submit" value="add the user">
+        	<span id = "error_display"></span>
+        </form>
+        <div>
+        	<p><span th:text="${error}"></span><p>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,581 @@
+package com.item.item.service;
+
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.regex.Pattern;
+
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.item.item.bundle.BundleItem100;
+import com.item.item.bundle.BundleMessage;
+import com.item.item.config.SecurityConfig;
+import com.item.item.model.Action;
+import com.item.item.model.Department;
+import com.item.item.model.Reset;
+import com.item.item.model.User;
+
+
+@Service
+public class ErrorService {
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	DepartmentService departmentService;
+	
+	@Autowired
+	ContextService contextService;
+	 
+	
+	//check login error
+    public String checkLoginError(User user) throws NoSuchAlgorithmException {
+   
+    	//init errorMsg variable
+    	String errorMsg = "";
+    	
+    	//check for error
+    	if(user.getUsername().isEmpty()) {
+    		errorMsg = "The username field is required !";
+    	}
+    	else if(user.getUsername().isBlank()) {
+    		errorMsg = "The username is not blank !";
+    	}
+    	else if(!userService.getUser(user.getUsername()).isPresent()) {
+    		errorMsg = "That user doesn't exists !";
+    	}
+    	else if(!userService.pickUpUser(user.getUsername()).getRole().equals("user")) {
+    		errorMsg = "That user is an administrator, not a simple user !";
+    	}
+    	else if(user.getPassword().isEmpty()) {
+    		errorMsg = "The password field is required !";
+    	}
+    	else if(user.getPassword().isBlank()) {
+    		errorMsg = "The password is not blank !";
+    	}
+    	else if(!userService.checkUserPass(user)){
+    		errorMsg = "The password is not correct !";
+    	}
+    	
+    	return errorMsg;			
+	}
+    
+    /**
+    //check subscribe error
+    public String checkSubscribeError(User user) throws NoSuchAlgorithmException {
+   
+    	//init errorMsg variable
+    	String errorMsg = "";
+    	
+    	//check for error
+    	if(user.getUsername().isEmpty()) {
+    		errorMsg = "The username field is required !";
+    	}
+    	else if(user.getUsername().isBlank()) {
+    		errorMsg = "The username is not blank !";
+    	}
+    	else if(user.getUsername().length() < 4) {
+    		errorMsg = "The username must have 4 characters at least !";
+    	}
+    	else if(userService.getUser(user.getUsername()).isPresent()) {
+    		errorMsg = "That user already exists !";
+    	}
+    	else if(user.getPassword().isEmpty()) {
+    		errorMsg = "The password field is required !";
+    	}
+    	else if(user.getPassword().isBlank()) {
+    		errorMsg = "The password is not blank !";
+    	}
+    	else if(user.getPassword().length() < 8){
+    		errorMsg = "The password must have 8 characters at least !";
+    	}
+    	else if(checkPasswordNotOnlyDigit(user.getPassword())){
+    		errorMsg = "The password must not have only numbers !";
+    	}
+    	else if(user.getLangage().isEmpty()) {
+    		errorMsg = "The langage must be selected !";
+    	}
+    	else if(user.getTimezone().isEmpty()) {
+    		errorMsg = "The time zone must be selected !";
+    	}
+ 
+    	return errorMsg;			
+	}
+    **/
+    
+    //check checking user error
+    public String checkingUserError(User user, User user2) throws NoSuchAlgorithmException {
+    	
+    	//init errorMsg variable
+    	String errorMsg = "";
+    	
+    	//get encrypted password
+    	String password = SecurityConfig.getEncryption(user.getPassword());
+    	
+		//check for error
+		if(user.getUsername().isEmpty()) {
+			errorMsg = "The username field is required !";
+		}
+		else if(user.getUsername().isBlank()) {
+    		errorMsg = "The username is not blank !";
+    	}
+		else if(user2.getUsername() == null) {
+			errorMsg = "That user doesn't exist !";
+		}
+		else if(user.getPassword().isEmpty()) {
+			errorMsg = "The password is required !";
+		}
+		else if(user.getPassword().isBlank()) {
+			errorMsg = "The password is not blank !";
+		}
+		else if(!password.equals(user2.getPassword())) {
+			errorMsg = "The password is not correct !";
+		}
+
+		return errorMsg;
+    }
+    
+    //check reset password error
+    public String resetPasswordError(Reset reset) throws NoSuchAlgorithmException {
+    	
+    	//init errorMsg variable
+    	String errorMsg = "";
+    	
+    	//get old and new password
+    	String passwordOld = userService.pickUpUser(reset.getUsername()).getPassword();
+    	String passwordNew = SecurityConfig.getEncryption(reset.getPass1());
+    	
+    	//check for error
+    	if(reset.getPass1().isEmpty()){
+    		errorMsg = "The new password field is required !";
+		}
+    	else if(reset.getPass1().isBlank()){
+    		errorMsg = "The new password field cannot be blank !";
+		}
+    	else if(reset.getPass1().length() < 8){
+    		errorMsg = "The new password must have 8 characters at least!";
+		}
+    	else if(checkPasswordNotOnlyDigit(reset.getPass1())){
+    		errorMsg = "The password must not have only numbers !";
+		}
+    	else if(passwordNew.equals(passwordOld)){
+    		errorMsg = "The new password must be different of the previous one !";
+		}
+    	else if(reset.getPass2().isEmpty()){
+    		errorMsg = "The password confirmation field is required !";
+		}
+    	/**
+    	else if(reset.getPass2().isBlank()){
+    		errorMsg = "The password confirmation field cannot be blank !";
+		}
+		**/
+    	else if(!reset.getPass1().equals(reset.getPass2())){
+    		errorMsg = "The two passwords are not equals !";
+		}
+		
+		return errorMsg;
+    }
+    
+    //check item error
+    public String checkingModelError(String[] values, String model) 
+    		throws NoSuchAlgorithmException, FileNotFoundException, IOException, ParseException, 
+    		IllegalArgumentException, IllegalAccessException {
+    	
+    	//init variables
+    	String errorMsg = "";
+    	int count = 0;
+    	
+    	String[] names = BundleItem100.getBundleMessage(model + "-fields").split(", ");
+    	String[] namesEN = BundleItem100.getBundleMessageEN(model + "-fields").split(", ");
+    	
+		for(String name : namesEN) {
+			
+			if(name.equals("price")){
+				errorMsg = getPriceMsg(values[count]).replaceFirst("VALUE", names[count]);
+			}
+			else {
+				errorMsg = getFieldMsg(values[count]).replaceFirst("VALUE", names[count]);
+			}
+			
+			if(!errorMsg.isEmpty()) {
+				break;
+			}
+			count += 1;
+			
+		}
+
+		return errorMsg;
+    }
+    
+    
+    public String getFieldMsg(String value) throws FileNotFoundException, IOException, ParseException {
+    	
+    	String errorMsg = "";
+    	
+    	if(value.isEmpty()) {
+			errorMsg = BundleMessage.getBundleMessage("field-required");
+		}
+		else if(value.isBlank()) {
+			errorMsg = BundleMessage.getBundleMessage("field-blank");
+		}
+    	
+    	return errorMsg;
+    }
+    
+    
+    public String getPriceMsg(String value) throws FileNotFoundException, IOException, ParseException {
+    	
+    	String errorMsg = "";
+    	
+    	if(value.isEmpty()) {
+			errorMsg = BundleMessage.getBundleMessage("price-num");
+		}
+		else if(Double.parseDouble(value) < 0) {
+			errorMsg = BundleMessage.getBundleMessage("price-neg");
+		}
+		else if(Double.parseDouble(value) > 100) {
+			errorMsg = BundleMessage.getBundleMessage("price-big");
+		}
+		else if(value.contains(".")) {
+			if(value.split("\\.")[1].length() > 2) {
+				errorMsg = BundleMessage.getBundleMessage("price-dec");
+			}
+		}
+    	
+    	return errorMsg;
+    }
+    
+	public String getSortingOrderMsg(String input) throws FileNotFoundException, IOException, ParseException {
+		
+		//init errorMsg and output variables
+    	String errorMsg = "";
+    	String output = "";
+    	
+    	//init lists from input and from messages
+    	String[] list = input.split(",");
+    	String[] list0 = BundleItem100.getBundleMessage("item-attributes").split(", ");
+
+    	//loop for set output
+    	for(int i = 0; i < list.length; i++){
+    		output = output + list[i].trim() + ", ";
+    	}
+    	for(int i = 0; i < list0.length; i++){
+    		if(output.indexOf(list0[i]) > -1){
+    			output = output.replaceFirst(list0[i] + ", ", "");
+    		}
+    	}
+
+    	//check for error
+    	if(!output.isBlank() && !input.isBlank()){
+    		errorMsg = "The entry is not valid";
+    	}
+    	
+    	return errorMsg;
+	}
+	
+	
+	public String checkDepartment(Department department) throws FileNotFoundException, IOException, ParseException {
+		
+		//init errorMsg and other error strings
+		String errorMsg = "";
+		
+		//get compagny and division values
+		String compagny = department.getCono();
+		String division = department.getDivi();
+		
+		//build error message
+		if(compagny.isBlank() || compagny.length() < 3 || checkIsDigit(compagny)) {
+			errorMsg = BundleMessage.getBundleMessage("compagny-invalid");
+			errorMsg = errorMsg.replaceFirst("VALUE", compagny);
+		}
+		else if(!departmentService.getConoMsg(compagny)){
+			errorMsg = BundleMessage.getBundleMessage("compagny-not");
+			errorMsg = errorMsg.replaceFirst("VALUE", compagny);
+    	}
+		
+		else if(division.isBlank() || division.length() < 3 || checkIsDigit(division)) {
+			errorMsg = BundleMessage.getBundleMessage("division-invalid");
+			errorMsg = errorMsg.replaceFirst("VALUE", division);
+		}
+		else if(!departmentService.getDiviMsg(compagny, division)) {
+			errorMsg = BundleMessage.getBundleMessage("division-not");
+			errorMsg = errorMsg.replaceFirst("VALUE", division);
+			errorMsg = errorMsg.replaceFirst("CONSTANTE", compagny);
+    	}
+		
+		return errorMsg;
+
+	}
+	
+	public String checkCompagny(String compagny, String action) throws FileNotFoundException, IOException, ParseException {
+		
+		//init errorMsg and other error strings
+		String errorMsg = "";
+		compagny = compagny == null ? "" : compagny;
+		
+		//build error message
+		if(compagny.isBlank() || compagny.length() < 3 || checkIsDigit(compagny)) {
+			errorMsg = BundleMessage.getBundleMessage("compagny-invalid");
+			errorMsg = errorMsg.replaceFirst("VALUE", compagny);
+		}
+		else if(departmentService.getConoMsg(compagny) && action.equals("add")){
+			errorMsg = "The compagny " + compagny + " exists !";
+    	}
+		else if(!departmentService.getConoMsg(compagny) && action.equals("delete")){
+			errorMsg = "That compagny " + compagny + " doesn't exist !";
+    	}
+		else if(action.equals("delete")){
+			Iterable<Department> departments = departmentService.getDepartments(compagny);
+			for(Department department : departments) {
+				if(!department.getDivi().isBlank()) {
+					errorMsg = "The compagny " + compagny + " contains divisions !";
+				}
+			}
+    	}
+		
+		return errorMsg;
+
+	}
+	
+	public String checkDivision(String compagny, String division, String action) throws FileNotFoundException, IOException, ParseException {
+		
+		//init errorMsg and other error strings
+		String errorMsg = "";
+		division = division == null ? "" : division;
+		
+		//build error message
+		if(division.isBlank() || division.length() < 3 || checkIsDigit(division)) {
+			errorMsg = BundleMessage.getBundleMessage("division-invalid");
+			errorMsg = errorMsg.replaceFirst("VALUE", division);
+		}
+		else if(departmentService.getDiviMsg(compagny, division) && action.equals("add")){
+			errorMsg = "The division " + division + " exists !";
+    	}
+		else if(action.equals("delete") && !departmentService.getDiviMsg(compagny, division)) {
+			errorMsg = "The division " + division + " doesn't exist in that compagny !";
+    	}
+		
+		return errorMsg;
+
+	}
+	
+
+	public String checkAction(Action action, int userid) throws FileNotFoundException, IOException, ParseException {
+		
+		String errorMsg = "";
+		boolean isUpdate = action.getOperation().equals("update");
+		boolean isDeletion = action.getOperation().equals("deletion");
+		
+		if(action.getOperation().isEmpty()) {
+			errorMsg = "Select an operation before submission !";
+		}
+		else if(isUpdate && action.getListIds() == null) {
+			errorMsg = "Select an user for that operation !";
+		}
+		else if(isUpdate && action.getListIds().split(",").length > 1) {
+			errorMsg = "Only one user must be selected for update !";
+		}
+		else if(isDeletion && action.getListIds() == null) {
+			errorMsg = "Select one user at least for deletion !";
+		}
+		else if(isDeletion) {
+			String[] list = action.getListIds().split(",");
+			for(String id : list) {
+				if(Integer.parseInt(id) == userid) {
+					errorMsg = "The user used for connection cannot be deleted !";
+				}
+			}
+		}
+		return errorMsg;
+	}
+	
+	
+	public String menuError(String transaction) throws FileNotFoundException, IOException, ParseException {
+		String error = BundleMessage.getBundleMessage("menu-not-error");
+		error = error.replaceFirst("VALUE", transaction);
+		return error;
+	}
+    
+    //check if password has not only digits
+    public boolean checkIsDigit(String entry) {
+    	Pattern pattern = Pattern.compile("[\\d]*");
+    	return !pattern.matcher(entry).matches();
+    }
+    
+    //check if price entry is a number
+    public boolean isNumber(String price) {
+    	String num = price.replaceAll(".", "");
+    	Pattern pattern = Pattern.compile("[1-9]*");
+    	return pattern.matcher(num).matches();
+    }
+
+	
+	
+	//check login error
+    public String admCheckLoginError(User user) throws NoSuchAlgorithmException {
+   
+    	//init errorMsg variable
+    	String errorMsg = "";
+    	
+    	//check for error
+    	if(user.getUsername().isEmpty()) {
+    		errorMsg = "The username field is required !";
+    	}
+    	else if(user.getUsername().isBlank()) {
+    		errorMsg = "The username is not blank !";
+    	}
+    	else if(!userService.getUser(user.getUsername()).isPresent()) {
+    		errorMsg = "That user doesn't exists !";
+    	}
+    	else if(!userService.pickUpUser(user.getUsername()).getRole().equals("administrator")) {
+    		errorMsg = "That user is not an administrator, but a simple user";
+    	}
+    	else if(user.getPassword().isEmpty()) {
+    		errorMsg = "The password field is required !";
+    	}
+    	else if(user.getPassword().isBlank()) {
+    		errorMsg = "The password is not blank !";
+    	}
+    	else if(!userService.checkUserPass(user)){
+    		errorMsg = "The password is not correct !";
+    	}
+		
+    	return errorMsg;			
+	}
+    
+    //check subscribe error
+    public String admCheckAddUserError(User user) throws NoSuchAlgorithmException {
+   
+    	//init errorMsg variable
+    	String errorMsg = "";
+    	
+    	//check for error
+    	if(user.getUsername().isEmpty()) {
+    		errorMsg = "The username field is required !";
+    	}
+    	else if(user.getUsername().isBlank()) {
+    		errorMsg = "The username is not blank !";
+    	}
+    	else if(user.getUsername().length() < 4) {
+    		errorMsg = "The username must have 4 characters at least !";
+    	}
+    	else if(userService.getUser(user.getUsername()).isPresent()) {
+    		errorMsg = "That user already exists !";
+    	}
+    	else if(user.getPassword().isEmpty()) {
+    		errorMsg = "The password field is required !";
+    	}
+    	else if(user.getPassword().isBlank()) {
+    		errorMsg = "The password is not blank !";
+    	}
+    	else if(user.getPassword().length() < 8){
+    		errorMsg = "The password must have 8 characters at least !";
+    	}
+    	else if(checkPasswordNotOnlyDigit(user.getPassword())){
+    		errorMsg = "The password must not have only numbers !";
+    	}
+    	else if(user.getLangage().isEmpty()) {
+    		errorMsg = "The langage must be selected !";
+    	}
+    	else if(user.getTimezone().isEmpty()) {
+    		errorMsg = "The time zone must be selected !";
+    	}
+    	else if(user.getDisplay().isEmpty()) {
+    		errorMsg = "The display mode must be selected !";
+    	}
+    	else if(user.getRole().isEmpty()) {
+    		errorMsg = "The user's role must be selected !";
+    	}
+ 
+    	return errorMsg;			
+	}
+    
+    public String admCheckDeleteUserError(String listId) throws NoSuchAlgorithmException {
+    	
+    	//init errorMsg variable
+    	String errorMsg = "";
+    	
+    	//check for error
+    	if(listId.isBlank()) {
+    		errorMsg = "At least one user must be selected !";
+    	}
+    	
+    	String[] ids = listId.split(",");
+    	for(String id : ids) {
+    		if(userService.getUser(Integer.parseInt(id)).isPresent()) {
+    			errorMsg = "A user in selection doesn't exist !";
+    		}
+    	}
+    	
+    	
+    	if(listId.isBlank()) {
+    		errorMsg = "At least one user must be selected !";
+    	}
+    	
+    	int userId = contextService.getSessionContext().getUserId();
+    	if(listId.contains(String.valueOf(userId))) {
+    		errorMsg = "The user used for connection cannot be deleted !";
+    	}
+    	
+    	
+    	return errorMsg;
+    }
+    
+    public String admCheckUpdateIsSessionId(int id, int userid) {
+		
+		String errorMsg = "";
+		
+		if(id == userid) {
+			errorMsg = "The user used for connection cannot be deleted !";
+		}
+		
+		return errorMsg;
+	}
+
+    
+    public String admCheckUpdateUserPasswordError(User user) throws NoSuchAlgorithmException {
+    	
+    	//init errorMsg variable
+    	String errorMsg = "";
+    	
+    	//check for error
+    	if(user.getPassword().isEmpty()) {
+    		errorMsg = "The password field is required !";
+    	}
+    	else if(user.getPassword().isBlank()) {
+    		errorMsg = "The password field cannot be blank !";
+    	}
+    	else if(user.getPassword().length() < 8) {
+    		errorMsg = "The password must have 8 characters at least !";
+    	}
+    	else if(checkPasswordNotOnlyDigit(user.getPassword())) {
+    		errorMsg = "The password must not have only numbers !";
+    	}
+    	
+    	return errorMsg;
+    }
+    
+    public String admCheckIsEqualPasswordError(String encrypted_password, String current_password) throws NoSuchAlgorithmException {
+    	
+    	//init errorMsg variable
+    	String errorMsg = "";
+    	
+    	//check for error
+    	if(current_password.equals(encrypted_password)) {
+    		errorMsg = "This is the same password that the current one !";
+    	}
+    	
+    	return errorMsg;
+    }
+    
+    //check if password has not only digits
+    public boolean checkPasswordNotOnlyDigit(String password) {
+    	Pattern pattern = Pattern.compile("[\\d]*");
+    	return pattern.matcher(password).matches();
+    }
+
+}

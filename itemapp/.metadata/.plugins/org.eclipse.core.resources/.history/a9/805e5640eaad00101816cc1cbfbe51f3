@@ -1,0 +1,10 @@
+
+var selectRole = document.getElementById("role");
+
+var value = selectRole.value;
+
+function disabled(e) {
+	if(e.target.node.value == "user") {
+		document.getElementById("langage").disabled = false;
+	}
+}

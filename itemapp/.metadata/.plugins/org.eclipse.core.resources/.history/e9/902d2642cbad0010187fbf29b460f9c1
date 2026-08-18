@@ -1,0 +1,90 @@
+DROP TABLE IF EXISTS compagnies, divisions, departments, users, items, itemoperations;
+
+
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50),
+  password VARCHAR(64),
+  langage VARCHAR(2),
+  timezone VARCHAR(2),
+  display VARCHAR(25),
+  sorting VARCHAR(250),
+  role VARCHAR(25),
+  department VARCHAR(7)
+);
+
+CREATE TABLE departments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  cono VARCHAR(3),
+  divi VARCHAR(3)
+);
+
+
+CREATE TABLE items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  reference VARCHAR(25),
+  colour VARCHAR(250) NOT NULL,
+  size VARCHAR(250) NOT NULL,
+  sizenumber INT NOT NULL,
+  graphics VARCHAR(250) NOT NULL,
+  price DECIMAL(4, 2) NOT NULL,
+  table_row INT NOT NULL,
+  department VARCHAR(7)
+);
+
+
+CREATE TABLE itemoperations (
+  id INT AUTO_INCREMENT  PRIMARY KEY,
+  dateop VARCHAR(25) NOT NULL,
+  reference VARCHAR(25) NOT NULL,
+  operation VARCHAR(25) NOT NULL,
+  description VARCHAR(250) NOT NULL,
+  department VARCHAR(7)
+);
+
+
+INSERT INTO departments (cono, divi) VALUES
+  ('100', ''),
+  ('100', '100'),
+  ('100', '200'),
+  ('500', '');
+
+  
+INSERT INTO items (reference, colour, size, sizenumber, graphics, price, table_row, department) VALUES
+  ('001', 'blue', 'small', 1, 'classic', '2', 0, '100/200'),
+  ('002','purple', 'medium', 2, 'fantasy', '4.50', 0, '100/200'),
+  ('003', 'dark', 'big', 3, 'classic', '3.20', 0, '100/200'),
+  ('004', 'green', 'medium', 2, 'laser', '4.50', 0, '100/200'),
+  ('005', 'dark', 'small', 1, 'thunder', '2.0', 0, '100/200'),
+  ('006','turquoise', 'medium', 2, 'ocean', '4.50', 0, '100/200'),
+  ('007', 'red', 'medium', 2, 'classic', '3.20', 0, '100/200'),
+  ('008', 'green', 'medium', 2, 'classic', '3.20', 0, '100/200'),
+  ('009', 'fluo green', 'small', 1, 'slime', '2.0', 0, '100/200'),
+  ('010', 'blue', 'medium', 2, 'classic', '3.20', 0, '100/200'),
+  ('011', 'blue', 'medium', 2, 'vintage', '4.50', 0, '100/200'),
+  ('012', 'dark', 'medium', 2, 'vintage', '4.50', 0, '100/200'),
+  ('013', 'dark', 'medium', 2, 'professional', '4.50', 0, '100/200'),
+  ('014', 'blue', 'medium', 2, 'professional', '4.50', 0, '100/200'),
+  ('015', 'bdgr', 'big', 3, 'classic', '4.00', 0, '100/200'),
+  ('016', 'fluo orange','medium', 2, 'orange sea', '4.50', 0, '100/100'),
+  ('017', 'fluo red', 'medium', 2, 'red laser', '4.50', 0, '200/100');
+ 
+
+INSERT INTO itemoperations (dateop, reference, operation, description, department) VALUES
+  ('2008-11-11 13:23:44', '001', 'ADDITION', '[green, small, orange-sea, 3.0]', '100/200'),
+  ('2022-09-22 09:00:00', '014', 'UPDATE', '[green, big, slime, 2.50]', '100/200');
+
+
+INSERT INTO users (username, password, langage, timezone, display, sorting, role, department) VALUES
+  ('username', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'fr', 'FR', 'scrollbar', 
+  'item no', 'user', '100/200'),
+  ('admname', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', '-', '-', '-', 
+  '-', 'administrator', '-/-'),
+  ('admname2', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', '-', '-', '-', 
+  '-', 'administrator', '100/200');
+
+
+  
+  
+  
+  

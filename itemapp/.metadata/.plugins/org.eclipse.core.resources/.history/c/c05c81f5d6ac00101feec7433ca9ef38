@@ -1,0 +1,595 @@
+ package com.item.item.controller;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.context.request.RequestContextHolder;
+
+import com.item.item.config.SecurityConfig;
+import com.item.item.model.Action;
+import com.item.item.model.Department;
+import com.item.item.model.StringObject;
+import com.item.item.model.User;
+import com.item.item.service.ContextService;
+import com.item.item.service.DepartmentService;
+import com.item.item.service.MsgErrorService;
+import com.item.item.service.UserService;
+
+
+@Controller
+public class AdminController {
+	
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	DepartmentService departmentService;
+	
+	@Autowired
+	ContextService contextService;
+	
+	@Autowired
+	MsgErrorService msgErrorService;
+	
+	
+	/** init **/
+	@GetMapping("/admin")
+    public String admin(Model model) throws IOException, ParseException, java.text.ParseException, NoSuchAlgorithmException {
+		
+		//if connected login
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/login";
+		}
+		
+		//if no admin redirect to create first admin
+		if(!userService.hasAdmin()) {
+			return "redirect:/admin/first";
+		}
+		
+		//else redirect user table
+		return "redirect:/admin/menu";
+
+    }
+	
+	@GetMapping("/admin/menu")
+    public String adminmenu(Model model) throws IOException, ParseException, java.text.ParseException, NoSuchAlgorithmException {
+		
+		//if connected login
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/login";
+		}
+		
+		//else redirect user table
+		return "admin/adminmenu";
+
+    }
+	
+	/** login **/
+	@GetMapping("/admin/login")
+    public String admlogin(User user, BindingResult result, Model model) throws IOException, ParseException, java.text.ParseException {
+		
+		//get user from map
+		HashMap<String, String> map = msgErrorService.getMapUser();
+		user.setAttr(map.get("username"), map.get("password"));
+		
+		//get error message
+		String error = msgErrorService.getErrorMsg();
+				
+		//add user and error in page
+		model.addAttribute("user", user);
+		model.addAttribute("error", error);
+		
+		//reset user's errorContext
+		msgErrorService.setUserError("", "", "", "", "");
+		
+		return "admin/admlogin";
+    }
+	
+	@PostMapping("/admin/connect")
+    public String admConnect(User user, BindingResult result, Model model) 
+    		throws IOException, ParseException, java.text.ParseException, NoSuchAlgorithmException {
+		
+		//check if error
+		if(msgErrorService.admCheckLoginError(user)) {
+			return "redirect:/admin/login";
+		}
+				
+		//get user's id and session's code
+		int idUser = userService.pickUpUser(user.getUsername()).getId();
+		String code = RequestContextHolder.currentRequestAttributes().getSessionId();
+				
+		//set beans userContext and sessionContext
+		contextService.setUserContext(idUser);
+		contextService.setSessionContext(idUser, user.getUsername(), code, "administrator");
+				
+		//reset message's errorContext
+		msgErrorService.setUserError("", "", "", "", "");
+		
+		return "redirect:/admin";
+    }
+
+	
+	@GetMapping("/admin/logout")
+    public String adminadduser(Model model) throws IOException, ParseException, java.text.ParseException {
+		
+		//reset session
+		contextService.setSessionContext(0, "", "");
+		contextService.getSessionContext().setRole("");
+				
+		return "redirect:/admin/login";
+    }
+	
+	/** departments **/
+	@GetMapping("/admin/compagnies/{crud}")
+    public String admincompagniescrud(@PathVariable("crud") String crud ,Model model) throws IOException, ParseException {
+		
+		//check connection
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/adminconnectError";
+		}
+		
+		//get compagnies and error message
+		Iterable<String> compagnies = departmentService.getCompagnies();
+		String error = msgErrorService.getMsgErrorContext().getErrorMsg();
+		
+		//add models in page
+		model.addAttribute("compagnies", compagnies);
+		model.addAttribute("crud", crud);
+		model.addAttribute("department", new Department());
+		model.addAttribute("error", error);
+		
+		//reset message's errorContext
+		msgErrorService.setMsgErrorContext("");
+		
+		return "admin/compagnies";
+	}
+	
+	@PostMapping("/admin/compagny/add")
+    public String admincompagnyadd(Department department, BindingResult result, Model model) 
+    		throws IOException, ParseException, java.text.ParseException, NoSuchAlgorithmException {
+		
+		//check connection
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/adminconnectError";
+		}
+		
+		//check compagny
+		if(msgErrorService.checkCompagny(department.getCono(), "add")) {
+			return "redirect:/admin/compagnies/new";
+		}
+		
+		//save compagny
+		department.setDivi("");
+		departmentService.saveDepartment(department);
+	
+		//reset messages's errorContext
+		msgErrorService.setMsgErrorContext("");
+		
+		return "redirect:/admin/compagnies/list";
+	}
+	
+	@PostMapping("/admin/compagny/delete")
+    public String admincompagnydelete(Department department, BindingResult result, Model model) 
+    		throws IOException, ParseException, java.text.ParseException, NoSuchAlgorithmException {
+		
+		//check connection
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/adminconnectError";
+		}
+		
+		//check compagny
+		if(msgErrorService.checkCompagny(department.getCono(), "delete")) {
+			return "redirect:/admin/compagnies/delete";
+		}
+		
+		//delete compagny
+		department.setDivi("");
+		departmentService.deleteThatDepartment(department);
+		
+		//reset message's errorContext
+		msgErrorService.setMsgErrorContext("");
+		
+		return "redirect:/admin/compagnies/list";
+	}
+	
+	@GetMapping("/admin/divisions/{cono}/{crud}")
+    public String admindivisions(@PathVariable("cono") String cono, @PathVariable("crud") String crud, Model model) 
+    		throws IOException, ParseException, java.text.ParseException {
+		
+		//check connection
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/adminconnectError";
+		}
+		
+		//get compagnies and divisions
+		Iterable<String> compagnies = departmentService.getCompagnies();
+		Iterable<String> divisions = departmentService.getDivisions(cono);
+		
+		//get error message
+		String error = msgErrorService.getMsgErrorContext().getErrorMsg();
+		
+		//add models in page
+		model.addAttribute("compagnies", compagnies);
+		model.addAttribute("divisions", divisions);
+		
+		model.addAttribute("cono", cono);
+		model.addAttribute("crud", crud);
+		
+		model.addAttribute("department", new Department(cono, ""));
+		model.addAttribute("error", error);
+		
+		msgErrorService.setMsgErrorContext("");
+		
+		return "admin/divisions";
+	}
+	
+	@PostMapping("/admin/division/{cono}/add")
+    public String admindivisionadd(@PathVariable("cono") String cono, Department department, BindingResult result, Model model) 
+    		throws IOException, ParseException, java.text.ParseException, NoSuchAlgorithmException {
+		
+		//check connection
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/adminconnectError";
+		}
+		
+		//check division
+		if(msgErrorService.checkDivision(department.getCono(), department.getDivi(), "add")) {
+			return "redirect:/admin/divisions/" + cono + "/new";
+		}
+		
+		//save compagny
+		department.setCono(cono);
+		departmentService.saveDepartment(department);
+	
+		//reset msgErrorContext
+		msgErrorService.setMsgErrorContext("");
+		
+		return "redirect:/admin/divisions/" + cono + "/list";
+	}
+	
+	@PostMapping("/admin/division/{cono}/delete")
+    public String admincdivisiondelete(@PathVariable("cono") String cono, Department department, BindingResult result, Model model) 
+    		throws IOException, ParseException, java.text.ParseException, NoSuchAlgorithmException {
+		
+		//check connection
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/adminconnectError";
+		}
+		
+		//check divsion
+		if(msgErrorService.checkDivision(department.getCono(), department.getDivi(), "delete")) {
+			return "redirect:/admin/divisions/" + cono + "/delete";
+		}
+		
+		//delete compagny
+		department.setCono(cono);
+		departmentService.deleteThatDepartment(department);
+		
+		//reset error message
+		msgErrorService.setMsgErrorContext("");
+		
+		return "redirect:/admin/divisions/" + cono + "/list";
+	}
+	
+	/** users **/
+	@GetMapping("/admin/users")
+    public String adminconnect(Model model) throws IOException, ParseException, java.text.ParseException {
+		
+		//check if connection
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/connectError";
+		}
+		
+		//get users from map
+		HashMap<String, String> map = msgErrorService.getMapAction();
+		Iterable<User> users = userService.getUsers();
+		
+		//get userId of session and action
+		int userId = contextService.getSessionContext().getUserId();
+		Action action = new Action(map.get("operation"), "");
+		
+		//get error message
+		String error = msgErrorService.getMsgErrorContext().getErrorMsg();
+		
+		//set models in page
+		model.addAttribute("users", users);
+		model.addAttribute("userId", userId);
+		model.addAttribute("error", error);
+		model.addAttribute("action", action);
+		
+		//reset error message
+		msgErrorService.setUserError("", "", "", "", "", "", "", "");
+		msgErrorService.setActionError("", "");
+		
+		return "admin/adminusers";
+    }
+	
+	@PostMapping("/admin/user/action")
+    public String adminaction(Action action, BindingResult result, Model model) 
+    		throws IOException, ParseException, java.text.ParseException {
+		
+		//check connection
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/connectError";
+		}
+		
+		//check action
+		if(msgErrorService.admCheckAction(action, contextService.getSessionContext().getUserId())) {
+			return "redirect:/admin/users";
+		}
+		
+		//return according to operation
+		switch(action.getOperation()) {
+			case "addition":
+			    return "redirect:/admin/user/add";
+			case "update":
+			    return "redirect:/admin/user/update/" + action.getListIds();
+			case "deletion":
+			    return "redirect:/admin/user/delete/" + action.getListIds();
+			default:
+			    return "redirect:/admin/users";
+		}
+
+	}
+	
+	@GetMapping("/admin/user/add")
+    public String adminuseradd(Model model) throws IOException, ParseException, java.text.ParseException {
+
+		//check connection
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/connectError";
+		}
+		
+		//get user context from map
+		HashMap<String, String> map = msgErrorService.getMapUser();
+		User user = new User(map.get("username"), map.get("password"), map.get("langage"), map.get("timezone"), 
+				map.get("display"), map.get("role"), map.get("department"));
+		
+		//get error message
+		String error = msgErrorService.getMsgErrorContext().getErrorMsg();
+		
+		//get models in page
+		model.addAttribute("user", user);
+		model.addAttribute("error", error);
+		
+		//set error message context
+		msgErrorService.setUserError("", "", "", "", "", "", "", "");
+		
+		return "admin/admadd";
+    }
+	
+	@PostMapping("/admin/user/adduser")
+    public String adminuseradduser(User user, BindingResult result, Model model) 
+    		throws IOException, ParseException, java.text.ParseException, NoSuchAlgorithmException {
+		
+		//check if connection
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//check if errors
+		if(msgErrorService.admCheckAddUserError(user)){
+			return "redirect:/admin/user/add";
+		}
+		
+		//get encrypted password
+		String encrypted_password = SecurityConfig.getEncryption(user.getPassword());
+		
+		//set user
+		user.setPassword(encrypted_password);
+		user.trim();
+				
+		//save item to have an id
+       	userService.saveUser(user);
+       	
+       	//reset error context
+       	msgErrorService.setActionError("", "");
+        
+		return "redirect:/admin/users";
+    }
+	
+	@GetMapping("/admin/user/update/{id}")
+    public String adminuserupdate(@PathVariable("id") int id, Model model) 
+    		throws IOException, ParseException, java.text.ParseException, NoSuchAlgorithmException {
+		
+		//check if connection
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/adminconnectError";
+		}
+		
+		//check if user exists
+		if(!userService.getUser(id).isPresent()) {
+			return "redirect:/admin/urlError/update/" + String.valueOf(id);
+		}
+		
+		//get user
+		User user = userService.pickUpUser(id);
+		user.setPassword("");
+		
+		//get error message
+		String error = msgErrorService.getMsgErrorContext().getErrorMsg();
+		
+		//add models in page
+		model.addAttribute(user);
+		model.addAttribute("error", error);
+		
+		//reset error context
+		msgErrorService.setUserError("", "", "", "", "", "", "", "");
+		
+		return "admin/admupdate";
+    }
+	
+	@PostMapping("/admin/user/updateuser")
+    public String adminupdateuser(User user, BindingResult result, Model model) 
+    		throws IOException, ParseException, java.text.ParseException, NoSuchAlgorithmException {
+		
+		//check if connection
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/adminconnectError";
+		}
+		
+		//check if error
+		if(msgErrorService.admCheckUpdateUserPasswordError(user)){
+			return "redirect:/admin/user/update/" + String.valueOf(user.getId());
+		}
+		
+		//get encrypted and current password
+		String encrypted_password = SecurityConfig.getEncryption(user.getPassword());
+		String current_password = userService.pickUpUser(user.getId()).getPassword();
+		
+		//check if new password different from current one
+		if(msgErrorService.admCheckIsEqualPasswordError(encrypted_password, current_password)) {
+			return "redirect:/admin/user/update/" + String.valueOf(user.getId());
+		}
+		
+		//set user
+		user = userService.pickUpUser(user.getId());
+		user.setPassword(encrypted_password);
+		
+		//save user
+		userService.saveUser(user);
+		
+		//reset error context
+		msgErrorService.setActionError("", "");
+		
+		return "redirect:/admin/users";
+    }
+
+	@GetMapping("/admin/user/delete/{listId}")
+    public String adminuserdelete(@PathVariable("listId") String listId, Model model) 
+    		throws IOException, ParseException, java.text.ParseException, NoSuchAlgorithmException {
+		
+		//check connection
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/adminconnectError";
+		}
+		
+		//check if listId correct
+		if(msgErrorService.admCheckDeleteUserError(listId, contextService.getSessionContext().getUserId())){
+			return "redirect:/admin/urlError/delete/" + listId;
+		}
+		
+		//add map of users and ids in page
+		model.addAttribute("map", userService.mapUsers(listId));
+		model.addAttribute("object", new StringObject(listId));
+		
+		return "admin/admdelete";
+    }
+    
+	@PostMapping("/admin/deleteuser")
+    public String admindeleteuser(StringObject object, BindingResult result, Model model) 
+    		throws IOException, ParseException, java.text.ParseException {
+		
+		//if connected login
+		if(!contextService.admCheckConnection()) {
+			return "redirect:/admin/login";
+		}
+		
+		//delete user
+		userService.deleteUsers(object.getText());
+		
+		//reset error context
+		msgErrorService.setActionError("", "");
+		
+		return "redirect:/admin/users";
+    }
+	
+	/** errors **/
+	@GetMapping("/admin/connectError")
+    public String adminconnectError(Model model) throws IOException, ParseException, java.text.ParseException {
+		 return "admin/adminconnectError";
+    }
+	
+	@GetMapping("/admin/urlError/update/{id}")
+    public String adminurlErrorUpdate(@PathVariable("id") int id, Model model) throws IOException, ParseException, java.text.ParseException {
+		
+		//make error message
+		String errorMsg = "The identifier parameter's for ";
+		errorMsg += "'" + "update/" + String.valueOf(id) + "'";
+		errorMsg += " is not valid !";
+				
+		//add error message in page
+		model.addAttribute("errorMsg", errorMsg);
+		
+		return "admin/adminurlError";
+    }
+	
+	@GetMapping("/admin/urlError/delete/{listId}")
+    public String adminurlErrorDelete(@PathVariable("listId") String listId, Model model) throws IOException, ParseException, java.text.ParseException {
+		
+		//make error message
+		String errorMsg = "The parameter's list for ";
+		errorMsg += "'" + "delete/" + listId + "'";
+		errorMsg += " is not valid !";
+				
+		//add error message in page
+		model.addAttribute("errorMsg", errorMsg);
+		
+		return "admin/adminurlError";
+    }
+	
+	
+	/** first connection **/
+	
+	@GetMapping("/admin/first")
+    public String admfirst(Model model) throws IOException, ParseException, java.text.ParseException {
+
+		//get user context from map
+		HashMap<String, String> map = msgErrorService.getMapUser();
+		User user = new User(map.get("username"), map.get("password"), map.get("langage"), map.get("timezone"), 
+			map.get("display"), map.get("role"), map.get("department"));
+				
+		//get error message
+		String error = msgErrorService.getMsgErrorContext().getErrorMsg();
+				
+		//get models in page
+		model.addAttribute("user", user);
+		model.addAttribute("error", error);
+				
+		//set error message context
+		msgErrorService.setUserError("", "", "", "", "", "", "", "");
+		
+		return "admin/admfirst";
+    }
+	
+	@PostMapping("/admin/addfirst")
+    public String admfirstAdmin(User user, BindingResult result, Model model) 
+    		throws IOException, ParseException, java.text.ParseException, NoSuchAlgorithmException {
+				
+		//check if errors
+		if(msgErrorService.admCheckFirstUserError(user)){
+			return "redirect:/admin/first";
+		}
+				
+		//get encrypted password
+		String encrypted_password = SecurityConfig.getEncryption(user.getPassword());
+				
+		//set user
+		user.setPassword(encrypted_password);
+		user.setRole("administrator");
+						
+		//save item to have an id
+		userService.saveUser(user);
+		
+		//set error message context
+		msgErrorService.setUserError("", "", "", "", "", "", "", "");
+		       	
+		return "redirect:/admin/conf";
+    }
+	
+	@GetMapping("/admin/conf")
+    public String admconf(Model model) throws IOException, ParseException, java.text.ParseException {
+		return "admin/admconf";
+	}
+	
+}

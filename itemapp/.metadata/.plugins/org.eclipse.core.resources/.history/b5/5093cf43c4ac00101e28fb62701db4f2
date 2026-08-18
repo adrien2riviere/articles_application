@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Administration - add User</title>
+        <link rel="stylesheet" type="text/css" href="/../css/admin/admfirst.css">
+    </head>
+    <body>
+        <h2>Administration - add a user</h2>
+        <form th:action="@{/admin/addfirst}" th:object="${user}" method="post" novalidate>
+            <h3>User form</h3>
+        	<label>username</label>
+        	<input type="text" th:field="*{username}" maxlength="25"></input>
+        	<span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span><br>
+        	<label>password</label>
+        	<input type="text" th:field="*{password}" maxlength="25"></input>
+        	<span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span><br>
+        	<input id="button" type="submit" value="add the user">
+        	<span id = "error_display"></span>
+        </form>
+        <div th:if="${error} != ''">
+        	<p><span th:text="${error}"></span><p>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Menu</title>
+        <link rel="stylesheet" type="text/css" href="css/menu.css">
+    </head>
+    <body>
+	    <div id="divheader">
+	    	<h2 th:text ="#{menu-title}" class="h2"></h2>
+		   	<div id="divlink">
+				<a id="logout" href="/logout">
+					<img src="../images/logout.png">
+					<span id="logouttip" th:text="#{logout-tip}"></span>
+				</a>
+				<span class="info" th:text="'langage/timezone: '"></span>
+			   	<a id="langage" href="/initLangage" th:text="${userContext.langage} + '/' + ${userContext.timezone}"></a>
+				<span class="info" th:text="'department: '"></span>
+				<a id="department" href="/initDepartment" th:text="${userContext.department}"></a>
+				<span th:text="${time}"></span>
+			</div>
+	    </div>
+	    <div id="divcontent">
+		    <div id="div_link">
+		        <a class="trans_link" href="/Item100/init" th:text="#{items-customer}"></a>
+		        <a class="trans_link" th:text="'ODF100 - Orders of production'"></a>
+		        <a class="trans_link" th:text="'...'"></a>
+		    </div>
+			<div id="div_search">
+				<form action="#" th:action="@{/chooseTable}" th:object="${table}" method="post" novalidate>
+			    	<label th:text="#{menu-label}" for="text"></label>
+			        <input type="text" th:field="*{text}" placeholder="" maxlength="10"></input> 	
+			        <span th:if="${#fields.hasErrors('text')}" th:errors="*{text}"></span>
+			        <input id="button" type="submit" value="search">
+			        <span id = "error_display"></span>
+			    </form>
+			    <p id="error" th:text="${error}"></p>
+			</div>
+		</div>
+    </body>
+</html>

@@ -1,0 +1,60 @@
+body {
+  text-align:center;
+  background-color:lightgrey;
+}
+
+h2 {
+	font-family:Verdana;
+	margin-top:0em;
+		margin-bottom:1em;
+	padding-top:0.4em;
+	padding-bottom:0.4em;
+	background-color:#c6e1d7;
+	font-family:calibri;
+	font-size:1.5em;
+}
+
+form{
+	margin-top:1em;
+	margin-bottom:2em;
+}
+
+label{
+	margin-top:1em;
+	margin-right:1em;
+	display: inline-block;
+	width:6em;
+	font-family:Arial;
+}
+
+input {
+	margin-top:1em;
+	margin-right:1em;
+	width:12.2em;
+}
+
+#divform {
+	background-color:white;
+	padding-bottom:2em;
+	left: 50%;
+	width:25em;
+	margin:auto;
+	margin-top:2em;
+	border-style:solid;
+	border-color:grey;
+	border-width:thin;
+}
+
+#bartitle {
+	
+}
+
+#button{
+	margin-top:2em;
+	padding-left:2em;
+	padding-right:2em;
+	background-color:rgb(128, 255, 128);
+	padding-top:0.5em;
+	padding-bottom:0.5em;
+}
+

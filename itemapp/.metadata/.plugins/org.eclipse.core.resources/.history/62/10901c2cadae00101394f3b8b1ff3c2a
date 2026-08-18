@@ -1,0 +1,25 @@
+package com.item.item.controller;
+
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+
+
+
+@Controller
+public class OF100Controller {
+	
+	/** init **/
+	@GetMapping("/OF100/init")
+    public String home(Model model) throws FileNotFoundException, IOException, NoSuchAlgorithmException {
+	
+		return "OF100/ofs";
+		
+    }
+	
+}

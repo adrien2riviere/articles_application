@@ -1,0 +1,346 @@
+package com.item.item.service;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
+
+import com.item.item.context.MsgErrorContext;
+import com.item.item.model.Action;
+import com.item.item.model.Department;
+import com.item.item.model.Reset;
+import com.item.item.model.User;
+
+
+@Service
+public class MsgErrorService {
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	ErrorService errorService;
+	
+	@Autowired
+	ApplicationContext context;
+	
+	
+	//get msgError context
+  	public MsgErrorContext getMsgErrorContext() {
+  		return context.getBean(MsgErrorContext.class);
+  	}
+  	
+  	
+  	//set msgError context
+  	public void setMsgErrorContext(String errorMsg) {
+  		getMsgErrorContext().setErrorMsg(errorMsg);
+  	};
+  	
+  	public void setUserError(String errorMsg, String username, String pass) {
+  		setMsgErrorContext(errorMsg);
+  		setMapUser(username, pass);
+  	};
+  	
+  	public void setUserError(String errMsg, String username, String pass, String lang, String timezone) {
+  		setMsgErrorContext(errMsg);
+  		setMapUser(username, pass, lang, timezone);
+  	};
+  	
+  	public void setUserError(String errMsg, String username, String pass, String lang, String timezone, String display, 
+  			String role, String department) {
+  		setMsgErrorContext(errMsg);
+  		setMapUser(username, pass, lang, timezone, display, role, department);
+  	};
+  	
+  	public void setUserError(String errMsg, String department) {
+  		setMsgErrorContext(errMsg);
+  		getMsgErrorContext().getMapUserErr().put("department", department);
+  	};
+  	
+  	public void setModelError(String errMsg, HashMap<String, String> map) throws IllegalArgumentException, IllegalAccessException {
+  		setMsgErrorContext(errMsg);
+  		setMapModel(map);
+  	};
+  	
+	public void setActionError(String operation, String listId) {
+  		setMapAction(operation, listId);
+  	};
+  	
+  	
+  	//getting errorMsg
+  	public String getErrorMsg() {
+  		getMsgErrorContext().MsgErrorNull();
+  		return getMsgErrorContext().getErrorMsg();
+    }
+  	
+  	
+  	//HashMap methods for managing field when error
+    public HashMap<String, String> getMapAction() {
+  		return getMsgErrorContext().getMapActionErr();
+  	}
+    
+    public void setMapAction(String operationErr, String listIdErr) {
+    	getMsgErrorContext().mapActionNull();
+  		getMsgErrorContext().setMapAction(operationErr, listIdErr);
+  	}
+  	
+    //HashMap methods for managing field when error
+    public HashMap<String, String> getMapUser() {
+    	getMsgErrorContext().mapUserNull();
+  		return getMsgErrorContext().getMapUserErr();
+  	}
+    
+    public void setMapUser(String usernameErr, String passwordErr) {
+    	getMsgErrorContext().mapUserNull();
+  		getMsgErrorContext().setMapUser(usernameErr, passwordErr);
+  	}
+    
+  	public void setMapUser(String usernameErr, String passErr, String langErr, String timezoneErr) {
+  		getMsgErrorContext().mapUserNull();
+  		getMsgErrorContext().setMapUser(usernameErr, passErr, langErr, timezoneErr);
+  	}
+  	
+  	public void setMapUser(String usernameErr, String passErr, String langErr, String timezoneErr, 
+  			String displayErr, String roleErr, String departmentErr) {
+  		getMsgErrorContext().mapUserNull();
+  		getMsgErrorContext().setMapUser(usernameErr, passErr, langErr, timezoneErr, displayErr, roleErr, departmentErr);
+  	}
+  	
+	public HashMap<String, String> getMapModel() {
+		getMsgErrorContext().mapModelNull();
+  		return getMsgErrorContext().getMapModelErr();
+  	}
+  	
+  	public void setMapModel(HashMap<String, String> map) throws IllegalArgumentException, IllegalAccessException {
+  		if(map == null) {
+  	  		getMsgErrorContext().mapModelNull();
+  		}
+  		else {
+  	  		getMsgErrorContext().setMapModel(map);  			
+  		}
+  	}
+  	
+  	
+  	//getting sortingErr
+  	public String getSorting() {
+  		getMsgErrorContext().sortingNull();
+  		return getMsgErrorContext().getSortingErr();
+  	}
+  	
+	//check login error
+    public boolean checkLoginError(User user) throws NoSuchAlgorithmException {
+   
+    	//set errorMsg variable
+    	String errorMsg = errorService.checkLoginError(user);
+    	
+    	//set user blank
+    	user.setBlank();
+    	
+    	//set errorMsg context
+    	setUserError(errorMsg, user.getUsername(), "");
+		
+    	return !errorMsg.isEmpty();			
+	}
+    
+    //check login error
+    public boolean admCheckLoginError(User user) throws NoSuchAlgorithmException {
+   
+    	//set errorMsg variable
+    	String errorMsg = errorService.admCheckLoginError(user);
+    	
+    	//set user blank
+    	user.setBlank();
+    	
+    	//set errorMsg context
+    	setUserError(errorMsg, user.getUsername(), "");
+		
+    	return !errorMsg.isEmpty();			
+	}
+    
+    //first user
+    public boolean admCheckFirstUserError(User user) throws NoSuchAlgorithmException {
+   
+    	//set errorMsg variable
+    	String errorMsg = errorService.admCheckFirstUserError(user);
+    	
+    	//set user blank
+    	user.setBlank();
+    	
+    	//set errorMsg context
+    	setUserError(errorMsg, user.getUsername(), "", "en", "EN", 
+    			"scrollbar", "administrator", "100/200");
+ 
+    	return !errorMsg.isEmpty();			
+	}
+    
+    //check subscribe error
+    public boolean admCheckAddUserError(User user) throws NoSuchAlgorithmException {
+   
+    	//set errorMsg variable
+    	String errorMsg = errorService.admCheckAddUserError(user);
+    	
+    	//trim user's attributes
+		user.seTrim();
+    	
+    	//set errorMsg context
+    	setUserError(errorMsg, user.getUsername(), "", user.getLangage(), user.getTimezone(), 
+    			user.getDisplay(), user.getRole(), user.getDepartment());
+ 
+    	return !errorMsg.isEmpty();			
+	}
+    
+    public boolean admCheckUpdateIsSessionId(int id, int userid) throws NoSuchAlgorithmException {
+    	
+    	String errorMsg = errorService.admCheckUpdateIsSessionId(id, userid);
+    	setMsgErrorContext(errorMsg);
+    	
+    	return !errorMsg.isEmpty();
+    }
+
+    public boolean admCheckDeleteUserError(String listId, int userid) throws NoSuchAlgorithmException {
+    	
+    	boolean isError = false;
+    	
+    	//check for error
+    	isError = listId.isBlank();
+    		
+    	String[] ids = listId.split(",");
+    	
+    	
+    	for(String id : ids) {
+    		boolean isPresent = userService.getUser(Integer.parseInt(id)).isPresent();
+    		boolean isSessionId = Integer.parseInt(id) == userid;
+    		if(!isPresent || isSessionId) {
+    			isError = true;
+    			break;
+    		}
+    	}
+    	
+    	return isError;
+    }
+    
+    public boolean admCheckUpdateUserPasswordError(User user) throws NoSuchAlgorithmException {
+    	
+    	String errorMsg = errorService.admCheckUpdateUserPasswordError(user);
+    	setMsgErrorContext(errorMsg);
+    	
+    	return !errorMsg.isEmpty();
+    }
+    
+    public boolean admCheckIsEqualPasswordError(String encrypted_password, String current_password) throws NoSuchAlgorithmException {
+    	
+    	String errorMsg = errorService.admCheckIsEqualPasswordError(encrypted_password, current_password);
+    	setMsgErrorContext(errorMsg);
+    	
+    	return !errorMsg.isEmpty();
+    }
+
+    //check checking user error
+    public boolean checkingUserError(User user, User user2) throws NoSuchAlgorithmException {
+    	
+    	//set errorMsg variable
+    	String errorMsg = errorService.checkingUserError(user, user2);
+		
+    	//set user blank
+    	user.setBlank();
+    	
+		//set errorMsg context
+    	setUserError(errorMsg, user.getUsername(), "");
+
+		return !errorMsg.isEmpty();
+    }
+    
+    //check reset password error
+    public boolean resetPasswordError(Reset reset) throws NoSuchAlgorithmException {
+    	
+    	//set errorMsg variable
+    	String errorMsg = errorService.resetPasswordError(reset);
+    	
+    	//set errorMsg context
+    	getMsgErrorContext().setErrorMsg(errorMsg);
+		
+		return !errorMsg.isEmpty();
+		
+    }
+    
+    //check item error
+    public boolean checkingModelError(String[] values, String model) throws NoSuchAlgorithmException, FileNotFoundException, IOException, 
+    		ParseException, IllegalArgumentException, IllegalAccessException {
+    	
+    	//set errorMsg variables
+    	//HashMap<String, String> map = new HashMap<String, String>();
+    	
+    	String errorMsg = errorService.checkingModelError(values, model);
+
+		//set errorMsg context
+		setMsgErrorContext(errorMsg);
+
+		return !errorMsg.isEmpty();
+    }
+    
+    //check sorting order
+    public String getSortingOrderMsg(String input) throws FileNotFoundException, IOException, ParseException {
+    	input = input.trim();
+    	return errorService.getSortingOrderMsg(input);
+    }
+    
+    
+    public boolean checkDepartment(Department department) throws FileNotFoundException, IOException, ParseException {
+		
+    	//get errorMsg and department string
+    	String errorMsg = errorService.checkDepartment(department);
+    	String departmentStr = department.getCono() + "/" + department.getDivi();
+    	
+    	//set user context
+    	setMsgErrorContext(errorMsg);
+    	context.getBean(MsgErrorContext.class).getMapUserErr().put("department", departmentStr);
+		
+    	return !errorMsg.isEmpty();
+	}
+    
+    public boolean checkCompagny(String compagny, String action) 
+    		throws FileNotFoundException, IOException, ParseException {
+		
+    	String errorMsg = errorService.checkCompagny(compagny, action);
+    	setMsgErrorContext(errorMsg);
+		
+    	return !errorMsg.isEmpty();
+	}
+    
+    public boolean checkDivision(String compagny, String division, String action) 
+    		throws FileNotFoundException, IOException, ParseException {
+		
+    	String errorMsg = errorService.checkDivision(compagny, division, action);
+    	setMsgErrorContext(errorMsg);
+		
+    	return !errorMsg.isEmpty();
+	}
+    
+    public boolean msgMenuError(String transaction) throws FileNotFoundException, IOException, ParseException {
+    	String error = errorService.menuError(transaction);
+    	setMsgErrorContext(error);
+    	return !error.isEmpty();
+    }
+    
+    public boolean admCheckAction(Action action, int userid) throws FileNotFoundException, IOException, ParseException {
+    	
+    	String errorMsg = errorService.checkAction(action, userid);	
+    	
+    	//set msgError context
+    	setMsgErrorContext(errorMsg);
+    	setActionError(action.getOperation(), action.getListIds());
+    	
+    	return !errorMsg.isEmpty();
+    	
+    }
+    
+    
+    
+
+
+}

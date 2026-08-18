@@ -1,0 +1,132 @@
+package com.item.item.bundle;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import java.time.LocalDateTime;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import org.json.simple.parser.ParseException;
+import org.springframework.context.i18n.LocaleContextHolder;
+import com.item.item.context.ItemContext;
+
+
+public interface BundleItem100 {
+	
+	
+	//get message from resource bundle with current Locale
+	public static String getBundleMessage(String variable) 
+			throws FileNotFoundException, IOException, ParseException {
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("lang/models/messages", LocaleContextHolder.getLocale());
+		String message = resourceBundle.getString(variable);
+		return message;
+	}
+		
+	//get message from resource bundle with default Locale (english)
+	public static String getBundleMessageEN(String variable) 
+			throws FileNotFoundException, IOException, ParseException {
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("lang/models/messages", Locale.ENGLISH);
+		String message = resourceBundle.getString(variable);
+		return message;
+	}
+	
+	//Alert message
+  	public static String getAlertMessage(ItemContext line, String timezone) 
+  			throws FileNotFoundException, IOException, ParseException, java.text.ParseException {
+  		
+  		//init message variable
+  		String message = "";
+  		String format = "dd/MM/yyyy - HH:mm:ss";
+  		String strDate = "";
+
+  		//set the transaction message
+  		if(line.getOperation().equals("addition")) {
+  			message = BundleMessage.getBundleMessage("add-message");
+  			message = message.replaceFirst("var1", line.getReference());
+  			message = message.replaceFirst("var2", String.valueOf(line.getRow()));
+  		}
+  		else if(line.getOperation().equals("update")) {
+  			message = BundleMessage.getBundleMessage("update-message");
+  			message = message.replaceFirst("var1", line.getReference());
+  			message = message.replaceFirst("var2", String.valueOf(line.getRow()));
+  		}
+  		else if(line.getOperation().equals("deletion")) {
+  			message = BundleMessage.getBundleMessage("delete-message");
+  			message = message.replaceFirst("var1", line.getReference());
+  		}
+
+  		//get date string in good format and put it in message
+  		strDate = BundleMessage.getDateStr(LocalDateTime.now(), format, timezone);
+  		message = message.replaceFirst("Date", strDate);
+  		
+  		return message;
+  	}
+	
+  	
+	//Translation of sorting value (english > user langage)
+	public static String translateToLang(String input) throws IOException, ParseException {
+		
+		//create output value
+		String output = "";
+		
+		//get list from input value
+		String[] sorting = input.split(",");
+		
+		//have lists from messages files
+		String[] sorting_en = getBundleMessageEN("item-attributes").split(", ");
+		String[] sorting_lg = getBundleMessage("item-attributes").split(", ");
+
+		//loop to get translation string
+		for(int i = 0; i < sorting.length; i++) {
+			for(int j = 0; j < sorting_en.length; j++) {
+				if(sorting[i].trim().equals(sorting_en[j].trim())) {
+					output += sorting_lg[j].trim() + ", ";
+				}
+			}
+		}
+		
+		if(!output.equals("")) {
+			//remove ", "  at the end of translation string
+			output = output.substring(0, output.length()- 2);
+		}
+
+		return output;
+	}
+	
+	//Translation of sorting value (user langage > english)
+	public static String translateToEN(String input) throws IOException, ParseException {
+		
+		//create output variable
+		String output = "";
+		
+		//get list from input value
+		String[] sorting_input = input.split(", ");
+		
+		//have lists from messages file
+		String[] sorting_en = getBundleMessageEN("item-attributes").split(", ");
+		String[] sorting_lg = getBundleMessage("item-attributes").split(", ");
+		
+		//loop to get translation string
+		for(int i = 0; i < sorting_input.length; i++) {
+			for(int j = 0; j < sorting_lg.length; j++) {
+				if(sorting_input[i].trim().equals(sorting_lg[j].trim())) {
+					output += sorting_en[j] + ", ";
+				}
+			}
+		}
+		
+		//manage when translation string is empty
+		if(output.equals("")) {
+			output = sorting_en[0];
+		}
+		else {
+			//or remove ", "  at the end of translation string
+			output = output.substring(0, output.length()-2);
+		}
+
+		return output;
+	}
+	
+}

@@ -1,0 +1,13 @@
+
+var selectRole = document.getElementById("role");
+selectRole.onchange = logSelection;
+
+function logSelection() {
+	let value = selectRole.value;
+	if(value == "user") {
+		document.getElementById("langage").disabled = false;
+	}
+	else {
+		document.getElementById("langage").disabled = true;
+	}
+}

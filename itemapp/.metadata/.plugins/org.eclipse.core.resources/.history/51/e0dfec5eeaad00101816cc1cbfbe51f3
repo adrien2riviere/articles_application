@@ -1,0 +1,8 @@
+
+var selectRole = document.getElementById("role");
+
+var value = selectRole.value;
+
+if(value == "user") {
+	document.getElementById("langage").disabled = false;
+}

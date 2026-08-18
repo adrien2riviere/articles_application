@@ -1,0 +1,5 @@
+var selectRole = document.getElementById("role");
+
+if(selectRole.nodeValue == "user") {
+	document.getElementById("langage").removeAttribute("disabled");
+}

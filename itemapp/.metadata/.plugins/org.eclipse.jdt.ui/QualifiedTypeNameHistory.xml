@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="com.item.item.service.ContextService"/>
+    <fullyQualifiedTypeName name="com.item.item.repository.ConoRepository"/>
+    <fullyQualifiedTypeName name="com.item.item.repository.DiviRepository"/>
+    <fullyQualifiedTypeName name="jakarta.persistence.Table"/>
+    <fullyQualifiedTypeName name="java.lang.annotation.Target"/>
+    <fullyQualifiedTypeName name="com.item.item.model.Division"/>
+    <fullyQualifiedTypeName name="com.item.item.model.UserContext"/>
+    <fullyQualifiedTypeName name="com.item.item.model.ActionContext"/>
+    <fullyQualifiedTypeName name="com.item.item.model.Action"/>
+    <fullyQualifiedTypeName name="com.item.item.model.Compagny"/>
+    <fullyQualifiedTypeName name="com.item.item.repository.DepartmentRepository"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="com.item.item.model.Department"/>
+    <fullyQualifiedTypeName name="com.item.item.service.DepartmentService"/>
+    <fullyQualifiedTypeName name="jakarta.servlet.FilterChain"/>
+    <fullyQualifiedTypeName name="jakarta.persistence.criteria.CriteriaBuilder"/>
+    <fullyQualifiedTypeName name="com.jayway.jsonpath.Criteria"/>
+    <fullyQualifiedTypeName name="jakarta.persistence.criteria.Expression"/>
+    <fullyQualifiedTypeName name="jakarta.persistence.criteria.Root"/>
+    <fullyQualifiedTypeName name="org.springframework.data.jpa.domain.Specification"/>
+    <fullyQualifiedTypeName name="com.item.item.model.StringObject"/>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.PostMapping"/>
+    <fullyQualifiedTypeName name="org.springframework.validation.BindingResult"/>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.PathVariable"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="java.lang.String"/>
+    <fullyQualifiedTypeName name="java.util.HashMap"/>
+    <fullyQualifiedTypeName name="com.item.item.bundle.AlertMessages"/>
+    <fullyQualifiedTypeName name="com.item.item.bundle.BundleItem100"/>
+    <fullyQualifiedTypeName name="java.sql.Time"/>
+    <fullyQualifiedTypeName name="java.lang.System"/>
+    <fullyQualifiedTypeName name="java.time.LocalTime"/>
+    <fullyQualifiedTypeName name="java.time.LocalDateTime"/>
+    <fullyQualifiedTypeName name="java.time.ZoneId"/>
+    <fullyQualifiedTypeName name="com.item.item.bundle.BundleMessage"/>
+    <fullyQualifiedTypeName name="java.time.format.DateTimeFormatter"/>
+</qualifiedTypeNameHistroy>

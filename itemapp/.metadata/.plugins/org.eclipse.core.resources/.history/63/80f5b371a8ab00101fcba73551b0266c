@@ -1,0 +1,209 @@
+package com.item.item.service;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.TimeZone;
+
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+
+import com.item.item.bundle.BundleMessage;
+import com.item.item.context.ActionContext;
+import com.item.item.context.ItemContext;
+import com.item.item.context.MapRowContext;
+import com.item.item.context.SessionContext;
+import com.item.item.context.UserContext;
+import com.item.item.model.User;
+
+
+@Service
+public class ContextService {
+	
+	@Autowired
+	ItemService itemService;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	ApplicationContext context;
+	
+	
+	/**SessionContext**/
+	
+	//get session context
+	public SessionContext getSessionContext() {
+		return context.getBean(SessionContext.class);
+	}
+	
+	//set session context
+	public void setSessionContext(int userId, String username, String code) {
+		getSessionContext().setAttr(userId, username, code);
+	}
+	
+	//set session context
+	public void setSessionContext(int userId, String username, String code, String role) {
+		getSessionContext().setAttr(userId, username, role, code);
+	}
+
+	//check connection (with session bean id and the id of the current session)
+	public Boolean checkConnection()  {
+		String session1 = context.getBean(SessionContext.class).getSessionId();
+		String session2 = RequestContextHolder.currentRequestAttributes().getSessionId();
+		String role = context.getBean(SessionContext.class).getRole();
+		return session1.equals(session2) && role.equals("user");
+	}
+	
+	public Boolean admCheckConnection()  {
+		String session1 = context.getBean(SessionContext.class).getSessionId();
+		String session2 = RequestContextHolder.currentRequestAttributes().getSessionId();
+		String role = context.getBean(SessionContext.class).getRole();
+		return session1.equals(session2) && role.equals("administrator");
+	}
+	
+	
+	/**UserContext**/
+	
+	//get user context
+	public UserContext getUserContext() {
+		return context.getBean(UserContext.class);
+	}
+
+	//set user context by user's id
+	public void setUserContext(int idUser) {
+
+		//get user
+		User user = userService.pickUpUser(idUser);
+		
+		//get user's properties
+		String lang = user.getLangage();
+		String timezone = user.getTimezone();
+		String display = user.getDisplay();
+		String sorting = user.getSorting();
+		String department = user.getDepartment();
+		
+		//set size of page (numbers of row)
+		int pageSize = 10;
+		
+		//set properties of user
+		setUserContext(lang, timezone, display, sorting, pageSize, department);
+
+	}
+	
+	//set user context
+	public void setUserContext(String lang, String timezone, String display, String sorting, int pageSize) {
+		getUserContext().setAttr(lang, timezone, display, sorting, pageSize);
+	}
+	
+	//set user context
+	public void setUserContext(String lang, String timezone, String display, String sorting, int pageSize, String department) {
+		getUserContext().setAttr(lang, timezone, display, sorting, pageSize, department);
+	}
+	
+	//set row in user context to 0
+    public void setRowNull() {
+		context.getBean(UserContext.class).setRow(0);
+	}
+	
+	//check if sorting is valid
+	public void checkSetUserContextSorting() throws FileNotFoundException, IOException {
+		if(!context.getBean(UserContext.class).checkSorting()) {
+			getUserContext().setSorting("item no");
+		}
+	}
+	
+    //get page and size of page from user context
+    public String getsizeAndPage() {
+    	return getUserContext().getSizeAndPage();
+	}
+    
+    /**ItemContext**/
+    
+    //get item context
+  	public ItemContext getItemContext() {
+  		return context.getBean(ItemContext.class);
+  	}
+    
+  	//set id and reference of item context
+    public void setItemContext(int idItem) {
+		
+		//get the reference of item
+		String reference = itemService.pickUpItem(idItem).getReference();
+		
+		//set item context
+		getItemContext().setAttr(idItem, reference);
+		
+	}
+    
+    //set id and reference of item context
+    public ActionContext getActionContext(String operation, String listId) {
+    	return context.getBean(ActionContext.class);
+	}
+    
+ 	//set item context for some attributes
+    public void setItemContext(int idItem, String reference, String operation, 
+    		int row, boolean isRecent, boolean toFind) {
+    	getItemContext().setAttr(idItem, reference, operation, row, isRecent, toFind);
+	}
+
+    //get isRecent from item context
+    public boolean getRecent() {
+    	return context.getBean(ItemContext.class).isRecent();
+	}
+    
+    //set toFind to false in item context
+    public void setToFindFalse() {
+		context.getBean(ItemContext.class).setToFind(false);
+	}
+    
+    
+    /**MapRowContext**/
+    
+    //get MapRow
+    public HashMap<Integer, Integer> getMapRow() {
+		return getMapRowContext().getMapRow();
+    }
+    
+    //get MapRowContext
+    public MapRowContext getMapRowContext() {
+		return context.getBean(MapRowContext.class);
+    }
+    
+    
+    /**ActionContext**/
+	
+	public ActionContext getActionContext() {
+		return context.getBean(ActionContext.class);
+	}
+	
+	//set id and reference of item context
+    public void setActionContext(String operation, String listId) {
+		
+		//set item context
+		getActionContext().setAttr(operation, listId);
+		
+	}
+    
+	
+	/** get time belong timezone **/
+	
+    
+    /**Admin**/
+    
+    public boolean isAdmin() {
+    	String role = context.getBean(SessionContext.class).getRole();
+    	return role.equals("administrator");
+    }
+    
+	
+     
+}

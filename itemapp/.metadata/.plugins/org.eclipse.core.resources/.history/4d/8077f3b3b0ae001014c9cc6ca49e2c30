@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Pagination</title>
+        <link rel="stylesheet" type="text/css" href="../css/item100/listBook.css">
+    </head>
+    <body>
+        <div id="title">
+    		<h2 class="h2" th:text ="#{records-title(#{items-model})}"></h2>
+    		<a id="menulink" th:text="#{item-menu}" href="/menu"></a>
+    		<span id="langageinfo" th:text="'langage/timezone:'"></span>
+    		<a id="language" href="/langage" th:text="${langage} + '/' + ${timezone}"></a>
+    		<span id="departmentinfo" th:text="'departement:'"></span>
+    		<a id="departmentlink" href="/department">
+    			<span th:text="${department}"></span>
+    		</a>
+    		<span id="localtime" th:text="${time}"></span>
+    	</div>
+        <div class="entete">
+        	<a id="add" href="/Item100/add">
+        		<img id="data_base" src="../images/data_base.png" alt="database logo">
+        		<img id="add_logo" src="../images/add_logo.png" alt="add logo">
+        		<span id="addtip" th:text="#{add-tip}"></span>
+        	</a>
+        	<a id="layout" th:href="@{/Item100/display/{option}(option='scrollbar')}">
+        		<img src="../images/scroll.png" alt="scrollbar logo">
+        		<span id="layouttip" th:text="#{layout-tip}"></span>
+        	</a>
+        	<a id="sorting" href="/Item100/sorting">
+        		<img src="../images/sorting.png" alt="sorting logo">
+        		<span id="sortingtip" th:text="#{sorting-tip}"></span>
+        	</a>
+        	<a id="history" href="/Item100/transactions">
+        		<img src="../images/list.png" alt="list logo">
+        		<span id="historytip" th:text="#{records-tip}"></span>
+        	</a>
+        </div>
+        <table border="1" class="tableFixHead">
+            <thead>
+                <tr>
+                	<th class="row_table"></th>
+                	<th th:text="#{item-no-item}"></th>
+                    <th th:text="#{item-colour}"></th>
+                    <th th:text="#{item-size}"></th>
+                    <th th:text="#{item-graphics}"></th>
+                    <th th:text="#{item-price}"></th>
+                    <th class="operation" th:text="#{item-operation}"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="noborder" th:if="${bookPage.totalPages == 0}">
+                    <td id="empty" colspan="3" th:text="#{home-empty}"></td>
+                </tr>
+                <tr th:class="(${item.reference} == ${line.reference}) ? ${line.operation} : line" th:each="item, iStat : ${bookPage.content}">
+                	<td class="row_table" th:text="${item.table_row}"> row </td>
+                	<td th:text="${item.reference}"></td>
+                    <td th:text="${item.colour}"></td>
+                    <td th:text="${item.size}"></td>
+                    <td th:text="${item.graphics}"></td>
+                    <td th:text="${item.price}"></td>
+                	<td>
+                		<div class="dropdown">
+				          <button id="update" th:onclick="'myFunction(' + ${item.table_row} + 
+				          ', ' + ${bookPage.number} + ', ' + ${bookPage.size} +')'" class="dropbtn">o</button>
+				          <div th:id="'myDropdown' + ${item.table_row}" class="dropdown-content">
+				              <a th:text="#{item-update}" th:href="@{/Item100/update/{id}(id=${item.id})}"></a>
+				              <a th:text="#{item-delete}" th:href="@{/Item100/delete/{id}(id=${item.id})}"></a>
+				              <a>Launch</a>
+				          </div>
+				        </div>
+					</td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${bookPage.totalPages > 0}" class="pagination down">
+        	<a 	
+        		th:href="@{/Item100/listBooks(size=${bookPage.size}, page=(${page} > 1) ? ${page - 1}  : ${1})}"
+		        th:text="'<'"
+		       >
+		    </a>
+        </div>
+		<div th:if="${bookPage.totalPages > 0}" class="pagination"
+		    th:each="pageNumber : ${pageNumbers}">
+		    <a 	
+		    	th:href="@{/Item100/listBooks(size=${bookPage.size}, page=${pageNumber})}"
+		        th:text=${pageNumber}
+		        th:class="${pageNumber==bookPage.number + 1} ? active">
+		    </a>
+		</div>
+		<div th:if="${bookPage.totalPages > 0}" class="pagination up">
+        	<a 	
+        		th:href="@{/Item100/listBooks(size=${bookPage.size}, page=(${page} < ${bookPage.totalPages}) ? ${page + 1}  : ${page})}"
+		        th:text="'>'"
+		       >
+		    </a>
+        </div>
+        <div th:if="${message}" class="message">
+			<span th:text="${message}"></span>
+			<a id="clear" href="/Item100/clean" th:text="#{clear-message}"></a>
+        </div>
+        <script type="text/javascript" src="../js/item100/board.js"></script>
+        <script type="text/javascript" src="../js/item100/contextpage.js"></script>
+    </body>
+</html>

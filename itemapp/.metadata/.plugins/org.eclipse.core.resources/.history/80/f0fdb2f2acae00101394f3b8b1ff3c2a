@@ -1,0 +1,73 @@
+package com.item.item.controller;
+
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+
+import com.item.item.bundle.BundleItem100;
+import com.item.item.context.ItemContext;
+import com.item.item.model.StringObject;
+import com.item.item.model.User;
+import com.item.item.model.Item;
+import com.item.item.service.ItemService;
+import com.item.item.service.MsgErrorService;
+import com.item.item.service.OperationService;
+import com.item.item.service.ContextService;
+import com.item.item.service.UserService;
+
+
+
+@Controller
+public class OF100Controller {
+	
+	@Autowired
+	ItemService itemService;
+	
+	@Autowired
+	OperationService operationService;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	ContextService contextService;
+	
+	@Autowired
+	MsgErrorService msgErrorService;
+
+
+@Controller
+public class OF100Controller {
+	
+	/** init **/
+	@GetMapping("/Item100/init")
+    public String home(Model model) throws FileNotFoundException, IOException, NoSuchAlgorithmException {
+		
+
+		
+		return "redirect:/OF100/ofs";
+		
+    }
+	
+}

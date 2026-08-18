@@ -1,0 +1,63 @@
+body {
+  padding-inline-start:1em;
+}
+
+h2 {
+	font-family:Arial;
+	font-size: 1.2em;
+}
+
+h3 {
+	font-size: 1.2em;
+	padding-left:0.6em;
+	width:14.5em;
+	background-color:#80ff80;
+	padding-top:0.4em;
+	padding-bottom:0.4em;
+}
+
+
+a {
+	color:#008080;
+	font-weight: bold;
+}
+
+form{
+	margin-top:1em;
+}
+
+label{
+	margin-top:1em;
+	margin-right:1em;
+	display: inline-block;
+	width:6em;
+	font-family:Calibri;
+}
+
+input {
+	margin-top:1em;
+	margin-right:1em;
+	width:12.2em;
+}
+
+select {
+	margin-top:1em;
+	margin-right:1em;
+	padding:0.12em;
+	width:12.75em;
+	background-color:#e6e6e6;
+} 
+
+#department{
+	background-color:#f0f0f0;
+}
+
+#button{
+	margin-top:2em;
+	margin-left:8.85em;
+	padding-top:0.4em;
+	padding-bottom:0.4em;
+	padding-left:2em;
+	padding-right:2em;
+}
+

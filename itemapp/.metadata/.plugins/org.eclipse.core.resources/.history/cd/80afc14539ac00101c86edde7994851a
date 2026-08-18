@@ -1,0 +1,488 @@
+package com.item.item.controller;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
+
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestContextHolder;
+
+import com.item.item.config.SecurityConfig;
+import com.item.item.context.UserContext;
+import com.item.item.model.Department;
+import com.item.item.model.Reset;
+import com.item.item.model.StringObject;
+import com.item.item.model.User;
+import com.item.item.service.ContextService;
+import com.item.item.service.MsgErrorService;
+import com.item.item.service.UserService;
+
+
+@Controller
+public class AppController {
+	
+	@Autowired
+	UserService userService;
+
+	@Autowired
+	ContextService contextService;
+	
+	@Autowired
+	MsgErrorService msgErrorService;
+
+	
+	/** init **/ 
+	//launch the application
+	@GetMapping("/")
+    public String init(Model model) throws FileNotFoundException, IOException {
+		
+		//check if connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/login";
+		}
+		
+		//get Locale
+		String lang = contextService.getUserContext().getLangage();
+		
+		return "redirect:/initLocale" + "?lang=" + lang;
+	}
+
+	/** Locale **/ 
+	//init Locale
+	@GetMapping("/initLocale")
+	public String initLocale(Model model) {
+		return "redirect:/menu";
+	}
+				
+	//update Locale
+	@GetMapping("/updateLocale")
+	public String updateLocale(@RequestParam("transaction") Optional<String> transaction, Model model) {
+		
+		if(!transaction.isPresent()) {
+			return "redirect:/menu";
+		}
+		
+		return "redirect:/" + transaction.orElse("") + "/board";
+	}
+		
+	@GetMapping("/initLangage")
+	public String initLangage(StringObject table, BindingResult result, Model model)
+	    	throws FileNotFoundException, IOException, NoSuchAlgorithmException, ParseException {
+			
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+					
+		//manage flag of userContext
+		if(contextService.getUserContext().isToflag()) {
+			contextService.getUserContext().setFlag(true);
+			contextService.getUserContext().setToflag(false);
+		}
+		else {
+			contextService.getUserContext().setFlag(false);
+		}
+					
+		//get userContext
+		UserContext userContext = contextService.getUserContext();
+					
+		//add model in page
+		model.addAttribute("userContext", userContext);
+					
+		return "initLangage";
+				
+	}
+
+	@GetMapping("/langage")
+	public String langage(Model model) throws IOException, ParseException {
+			
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+			
+		//manage flag of userContext
+		if(contextService.getUserContext().isToflag()) {
+			contextService.getUserContext().setFlag(true);
+			contextService.getUserContext().setToflag(false);
+		}
+		else {
+			contextService.getUserContext().setFlag(false);
+		}
+			
+		//get userContext
+		UserContext userContext = contextService.getUserContext();
+			
+		//add model in page
+		model.addAttribute("userContext", userContext);
+			
+		return "langage";
+		
+	}
+		
+	@PostMapping("/updatelangage")
+	public String updatelangage(@RequestParam("transaction") Optional<String> transaction, UserContext userContext, 
+	    	BindingResult result, Model model) throws IOException, ParseException {
+			
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+			
+		//get langage and time zone of user
+		String lang = userContext.getLangage();
+		String timezone = userContext.getTimezone() == null ? "EN" : userContext.getTimezone();
+			
+		//change langage and time zone of user context
+		contextService.getUserContext().setLangage(lang);
+		contextService.getUserContext().setTimezone(timezone);
+			
+		//manage flag of userContext
+		if(userContext.isFlag()) {
+			contextService.getUserContext().setToflag(false);
+		}
+			
+		if(!transaction.isPresent()) {
+			return "redirect:/updateLocale" + "?lang=" + lang;
+		}
+		else {
+			return "redirect:/updateLocale" + "?lang=" + lang + "&transaction=" + transaction.orElse("");
+		}
+		
+	}
+		
+	/** Department **/	
+	@GetMapping("/initDepartment")
+	public String initdepartment(Model model) {
+			
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+			
+		//create department and get errorMsg
+		User user = userService.pickUpUser(contextService.getSessionContext().getUserId());
+		String userDepartment = user.getDepartment();
+		Department department = new Department(userDepartment.split("/")[0], userDepartment.split("/")[1]);
+		
+		//get errorMsg
+		String error = msgErrorService.getErrorMsg();
+				
+		//add department and error in page
+		model.addAttribute("department", department);
+		model.addAttribute("error", error);
+			
+		return "initDepartment";
+			
+	}
+		
+	@GetMapping("/department")
+	public String department(Model model) {
+			
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+			
+		//create department
+		User user = userService.pickUpUser(contextService.getSessionContext().getUserId());
+		String userDepartment = user.getDepartment();
+		Department department = new Department(userDepartment.split("/")[0], userDepartment.split("/")[1]);
+			
+		//get errorMsg
+		String error = msgErrorService.getErrorMsg();
+			
+		//add department and error in page
+		model.addAttribute("department", department);
+		model.addAttribute("error", error);
+			
+		return "department";
+			
+	}
+		
+	@PostMapping("/updateDepartment")
+	public String updateDepartment(@RequestParam("transaction") Optional<String> transaction, Department department, 
+			BindingResult result, Model model) throws FileNotFoundException, IOException, ParseException {
+			
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+			
+		//check if department exists
+		if(msgErrorService.checkDepartment(department)) {
+			if(!transaction.isPresent()) {
+				return "redirect:/initDepartment";
+			}
+			else {
+				return "redirect:/department";
+			}
+		}
+			
+		//get user and department
+		int id = contextService.getSessionContext().getUserId();
+		User user = userService.pickUpUser(id);
+		String departmentStr = department.getCono() + "/" + department.getDivi();
+			
+		//check if change in department
+		if(user.getDepartment().equals(departmentStr)) {
+			if(!transaction.isPresent()) {
+				return "redirect:/menu";
+			}
+			
+			return "redirect:/" + transaction.orElse("") + "/board";	
+		}
+			
+		//set new department
+		user.setDepartment(departmentStr);
+		contextService.getUserContext().setDepartment(user.getDepartment());
+			
+		//save the user
+		userService.saveUser(user);
+			
+		if(!transaction.isPresent()) {
+			return "redirect:/menu";
+		}
+			
+		return "redirect:/" + transaction.orElse("") + "/board";
+			
+	}
+		
+	/** Login **/	
+	@GetMapping("/login")
+    public String login(User user, BindingResult result, Model model) throws NoSuchAlgorithmException {
+		
+		//get user model and error message
+		user.setUsername(msgErrorService.getMapUser().get("username"));
+		String error = msgErrorService.getErrorMsg();
+		
+		//add user and error message in page
+		model.addAttribute("user", user);
+		model.addAttribute("error", error);
+		
+		//reset error message and user context
+		msgErrorService.setUserError("", "", "", "", "");
+		
+        return "login/login";
+    }
+
+	@PostMapping("/connect")
+    public String connect(User user, BindingResult result, Model model) throws NoSuchAlgorithmException {
+		
+		//check if error
+		if(msgErrorService.checkLoginError(user)) {
+			return "redirect:/login";
+		}
+		
+		//get user's id and session's code
+		int idUser = userService.pickUpUser(user.getUsername()).getId();
+		String code = RequestContextHolder.currentRequestAttributes().getSessionId();
+		
+		//set beans userContext and sessionContext
+		contextService.setUserContext(idUser);
+		contextService.setSessionContext(idUser, user.getUsername(), code);
+		contextService.getSessionContext().setRole("user");
+		
+		//reset error message and user context
+		msgErrorService.setUserError("", "", "", "", "");
+		
+        return "redirect:/";
+    }
+	
+	@GetMapping("/logout")
+    public String logout(Model model) throws NoSuchAlgorithmException {
+		
+		//empty the session bean
+		contextService.setSessionContext(0, "", "");
+		
+        return "redirect:/login";
+    }
+	
+	@GetMapping("/check")
+    public String check(Model model) {
+		
+		//get the user and error message
+		String username = msgErrorService.getMapUser().get("username");
+		User user = new User(0, username, "");
+		String error = msgErrorService.getErrorMsg();
+		
+		//add user and error message in page
+		model.addAttribute("user", user);
+		model.addAttribute("error", error);
+		
+		//reset message's errorContext
+		msgErrorService.setUserError("", "", "", "", "");
+		
+        return "login/checkPass";
+    }
+	
+	@PostMapping("/checkuser")
+    public String checkuser(User user1, BindingResult result, Model model) throws NoSuchAlgorithmException {
+		
+		//get the user
+		User user2 = userService.pickUpUser(user1.getUsername());
+		
+		//check if error
+		if(msgErrorService.checkingUserError(user1, user2)) {
+			return "redirect:/check";
+		}
+		
+		//set session context bean
+		String code = RequestContextHolder.currentRequestAttributes().getSessionId();
+		contextService.setSessionContext(user2.getId(), user2.getUsername(), code);
+		contextService.getSessionContext().setRole("user");
+		
+		//reset msgError context
+		msgErrorService.setUserError("", "", "", "", "");
+		
+        return "redirect:/reset";
+    }
+	
+	@GetMapping("/reset")
+    public String reset(Model model) throws NoSuchAlgorithmException {
+		
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//get username from session
+		String username = contextService.getSessionContext().getUsername();
+		
+		//get reset model and error message
+		Reset reset = new Reset(username, "", "");
+		String error = msgErrorService.getErrorMsg();
+		
+		//add reset model and error message in page
+		model.addAttribute("reset", reset);
+		model.addAttribute("error", error);
+		
+        return "login/resetPass";
+    }
+	
+	@PostMapping("/resetpassword")
+    public String resetpassword(Reset reset, BindingResult result, Model model) throws NoSuchAlgorithmException {
+		
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+				
+		//check if error
+		if(msgErrorService.resetPasswordError(reset) ){
+			return "redirect:/reset";
+		}
+
+		//save user's password
+		User user = userService.pickUpUser(contextService.getSessionContext().getUsername());
+		String password = SecurityConfig.getEncryption(reset.getPass1());
+		user.setPassword(password);
+		userService.saveUser(user);
+		
+		//reset msgError context
+		msgErrorService.setUserError("", "", "", "", "");
+		
+        return "redirect:/resetConf";
+    }
+	
+	@GetMapping("/resetConf")
+	public String resetconf() {
+		
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		return "login/confPass";
+		
+	}
+	
+	/** menu **/
+	
+	@GetMapping("/menu")
+    public String menu(Model model) 
+    		throws FileNotFoundException, IOException, NoSuchAlgorithmException, ParseException, java.text.ParseException {
+		
+		//check connection
+		if(!contextService.checkConnection()) {
+			return "redirect:/connectError";
+		}
+		
+		//get userContext, table, time and error message
+		UserContext userContext = contextService.getUserContext();
+		StringObject table = new StringObject();
+		String time = contextService.getTime(userContext.getTimezone());
+		String error = msgErrorService.getErrorMsg();
+		
+		//add models in page
+		model.addAttribute("userContext", userContext);
+		model.addAttribute("table", table);
+		model.addAttribute("time", time);
+		model.addAttribute("error", error);
+		
+		msgErrorService.setMsgErrorContext("");
+	
+		return "menu";
+		
+    }
+	
+	@PostMapping("/chooseTable")
+    public String chooseTable(StringObject table, BindingResult result, Model model)
+    		throws FileNotFoundException, IOException, NoSuchAlgorithmException, ParseException {
+		
+		String code = table.getText().toUpperCase();
+		switch (code){
+			case "ITM100" :
+				return "redirect:/Item100/init";
+			default:
+				if(!table.getText().isBlank()) {
+					msgErrorService.msgMenuError(table.getText());
+				}
+				return "redirect:/menu";
+		}
+			
+    }
+	
+	@GetMapping("/connectError")
+	public String connectionError() {
+	    return "connectError";
+	}
+	
+	@GetMapping("/urlError/delete/{id}")
+	public String urlErrorDelete(@PathVariable("id") int id, Model model) {
+		
+		//make error message
+		String errorMsg = "The identifier parameter's for ";
+		errorMsg += "'" + "delete/" + String.valueOf(id) + "'";
+		errorMsg += " is not valid !";
+		
+		//add error message in page
+		model.addAttribute("errorMsg", errorMsg);
+		
+	    return "urlError";
+	}
+	
+	@GetMapping("/urlError/update/{id}")
+	public String urlErrorUpdate(@PathVariable("id") int id, Model model) {
+		
+		//make error message
+		String errorMsg = "The identifier parameter's for ";
+		errorMsg += "'" + "update/" + String.valueOf(id) + "'";
+		errorMsg += " is not valid !";
+		
+		//add message in page
+		model.addAttribute("errorMsg", errorMsg);
+		
+	    return "urlError";
+	}
+		
+}

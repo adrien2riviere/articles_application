@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Administration - login</title>
+        <link rel="stylesheet" type="text/css" href="../css/admin/admusers.css">
+    </head>
+    <body>
+        <h2>Administration - List of Users</h2>
+        <form th:action="@{/admin/user/action}" th:object="${action}" method="post" novalidate>
+	        <div class="buttons">
+	        	<a id="logout" href="/admin/menu">back to menu</a>
+	        	<select th:field="*{operation}">
+	        		<option value=""> --- </option>
+	        		<option value="addition">add a user</option>
+	        		<option value="update">update password</option>
+	        		<option value="deletion">delete selected users</option>
+	        	</select>
+	        	<input id="submit" type="submit" value="Go">
+	        	<span id="error" th:if="${error} != ''" th:text="${error}"></span>
+	        </div>
+	        <table class="tableFixHead">
+	            <thead>
+	                <tr>
+	                	<th>username</th>
+	                	<th>role</th>
+	                    <th>display mode</th>
+	                    <th>langage</th>
+	                    <th>timezone</th>
+	                    <th>departement</th>
+	                    <th>selected</th>
+	                </tr>
+	            </thead>
+	            <tbody>
+	            	<tr id="noborder" th:if="${users.empty}">
+	                    <td id="empty" colspan="3" >empty</td>
+	                </tr>
+	                <tr th:each="user:${users}" th:class="${user.id} == ${userId} ? 'grey' : ''">
+	                	<td th:text="${user.id}" hidden="true"></td>
+	                	<td th:text="${user.username}"></td>
+	                	<td th:text="${user.role}"></td>
+	                	<td th:text="${user.display}"></td>
+	                	<td th:text="${user.langage}"></td>
+	                	<td th:text="${user.timezone}"></td>
+	                	<td th:text="${user.department}"></td>
+	                	<td th:if="${user.id} != ${userId}"><input type="checkbox" th:field="*{listIds}" th:value="${user.id}"></td>
+	                	<td th:if="${user.id} == ${userId}" class="nocheckbox">-</td>
+	                </tr>
+	            </tbody>
+	        </table>
+        </form>
+    </body>
+</html>

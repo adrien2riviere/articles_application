@@ -1,0 +1,19 @@
+#items
+items-model=items
+item-model=item
+item-menu=menu
+item-no-item=item no
+item-colour=colour
+item-size=size
+item-graphics=graphics
+item-price=price
+item-update=Update
+item-delete=Delete
+item-operation=operation
+item-attributes=item no, colour, size, graphics, price
+item-fields=colour, size, graphics, price
+layout-tip=layout
+sorting-tip=sorting order
+records-tip=records
+
+

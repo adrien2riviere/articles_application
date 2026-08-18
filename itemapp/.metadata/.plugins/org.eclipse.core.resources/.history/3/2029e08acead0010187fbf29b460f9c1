@@ -1,0 +1,10 @@
+
+var selectRole = document.getElementById("role");
+
+selectRole.onselect = disabled
+
+function disabled(e) {
+	if(selectRole.nodeValue == "user") {
+		document.getElementById("langage").removeAttribute("disabled")
+	}
+}

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Check user</title>
+        <link rel="stylesheet" type="text/css" href="../css/login/confPass.css">
+    </head>
+    <body>
+    	<div id="divform">
+    		<h2>Reset password confirmation</h2>
+        	<p>Your password had been updated !</p>
+        	<a href="/admin/login">go to login page</a>
+    	</div>
+    </body>
+</html>

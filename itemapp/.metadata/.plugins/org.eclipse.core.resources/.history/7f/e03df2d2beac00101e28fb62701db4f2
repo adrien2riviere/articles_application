@@ -1,0 +1,95 @@
+package com.item.item.model;
+
+
+import java.util.HashMap;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
+
+
+@Entity
+@Table(name = "items")
+@Data
+public class Item {
+	
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
+	String reference;
+	String colour;
+	String size;
+	int sizenumber;
+	String graphics;
+	String price;
+	int table_row;
+	String department;
+	
+	public Item() {
+		
+	}
+	
+	public Item(String colour, String size, String graphics, String price){
+		this.colour = colour;
+		this.size = size;
+		this.graphics = graphics;
+		this.price = price;
+	}
+	
+	public void setAttr(String colour, String size, String graphics, String price){
+		this.colour = colour;
+		this.size = size;
+		this.graphics = graphics;
+		this.price = price;
+	}
+	
+	public String[] getValues(){
+		String[] values = {this.colour, this.size, this.graphics, this.price};
+		return values;
+	}
+	
+	public String getValuesString(){
+		String valuesString = this.colour + ", " + this.size + ", " + this.graphics + ", " + this.price;
+		return valuesString;
+	}
+	
+	public String getAttrNameList(){
+		return "reference-colour-size-graphics-price";
+	}
+	
+	public HashMap<String, String> getAttrMap(){
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put("colour", this.colour.trim());
+		map.put("size", this.size.trim());
+		map.put("graphics", this.graphics.trim());
+		map.put("price", this.price.trim());
+		return map;
+	}
+	
+	//to set the sizeNumber for a item
+	public void getSizenumber(String size){
+				
+		int number = 
+				size.equals("small") ? 1 : 
+				size.equals("medium") ? 2 :
+				size.equals("big") ? 3 : 0;
+			 
+		sizenumber = number;
+				
+	}
+	
+	//to trim
+	public void trim(){
+					
+		int number = 
+				size.equals("small") ? 1 : 
+				size.equals("medium") ? 2 :
+				size.equals("big") ? 3 : 0;
+				 
+		sizenumber = number;
+					
+	}
+}
